@@ -1,0 +1,182 @@
+{
+  "prompt_title": "Comprehensive Guide to Building AgriAssist App Using React Native Expo with On-Device AI Integration",
+  "prompt_description": "This JSON-structured prompt provides an extremely detailed, step-by-step guide to building the AgriAssist mobile app from scratch. The app is a native React Native application using Expo for development, targeting Android and iOS. It incorporates Google's Gemma 3 model for on-device AI-powered multilingual voice assistant capabilities (handling natural language processing, advisory generation, and multilingual support). ElevenLabs is integrated for high-quality, multilingual text-to-speech (TTS) synthesis, with fallback to on-device processing where possible. The app addresses the SIH 2025 problem statement by providing real-time, location-specific crop advisory, soil health recommendations, weather alerts, pest/disease detection via image uploads, market price tracking, and voice support for low-literate users. The guide covers setup, architecture, implementation, testing, and deployment. Assume basic knowledge of JavaScript, React, and mobile development. Use the provided UI mockup descriptions and screenshots as visual references for UI/UX implementation.",
+  "target_platforms": ["Android", "iOS"],
+  "technologies_stack": {
+    "frontend": "React Native v0.75+ with Expo v51+",
+    "ai_model": "Google's Gemma 3 (on-device inference via TensorFlow.js or Hugging Face Transformers.js for lightweight quantized model)",
+    "voice_synthesis": "ElevenLabs API for multilingual TTS (with offline fallback using Expo's AV or react-native-tts if needed)",
+    "speech_to_text": "Expo Speech or react-native-voice for on-device STT, with multilingual support",
+    "backend_integrations": [
+      "Weather API (e.g., OpenWeatherMap for location-based weather)",
+      "Market Prices API (e.g., custom or public agri-market APIs like Agmarknet for India-specific data)",
+      "Image Analysis for Pest/Disease: On-device ML via TensorFlow.js or integrate with Google ML Kit",
+      "Location Services: Expo Location",
+      "Notifications: Expo Notifications"
+    ],
+    "other_libraries": [
+      "react-navigation for navigation",
+      "expo-av for audio handling",
+      "expo-image-picker for image uploads",
+      "i18n-js or expo-localization for multilingual support",
+      "redux or context API for state management",
+      "expo-sensors for any additional device features"
+    ]
+  },
+  "app_features_based_on_mockups_and_description": {
+    "core_features": [
+      "Multilingual support (English, Hindi, regional Indian languages) with voice input/output",
+      "Location-based services (e.g., current location: Farmville or Lagos, Nigeria as in mockups)",
+      "Voice Assistant: Chat interface with AI prompts like 'What are the best practices for managing pests in my area?'",
+      "Welcome Screen: Language selection and continue button",
+      "Home Screen: Search bar, Today's Advisory (crop-specific tips), Weather (current conditions, alerts), Quick Access buttons (Soil Health, Pest Detection, Market Prices)",
+      "Advisory Section: Real-time crop advice based on soil, weather, history",
+      "Pest & Disease Detection: Image upload, analysis, recent scans list (e.g., Leaf Blight, Stem Rust)",
+      "Soil Health: Input fields for pH, Organic Matter, Nutrients (N,P,K), Analyze button, Fertilizer recommendations (Urea, Superphosphate, etc.), Application methods",
+      "Market Prices: Search, Trending Crops with prices and changes (Rice, Wheat, Corn, etc.)",
+      "Settings: Location, Notifications (toggle), Language, Voice Support (toggle), Report Issue, Provide Feedback",
+      "Feedback Collection: In-app forms for usage data and improvements"
+    ],
+    "ai_integration_points": [
+      "Gemma 3 for generating personalized advisories, processing user queries in natural language, and multilingual translation",
+      "ElevenLabs for TTS to read out responses in selected language",
+      "On-device processing to ensure offline functionality where possible"
+    ]
+  },
+  "development_steps": [
+    {
+      "step_number": 1,
+      "step_title": "Set Up Development Environment",
+      "details": [
+        "Install Node.js (v18+), npm/yarn, and Expo CLI globally: npm install -g expo-cli",
+        "Set up Android Studio for Android emulator and Xcode for iOS simulator",
+        "Create a new Expo project: expo init AgriAssist --template blank",
+        "Navigate to project directory: cd AgriAssist",
+        "Install core dependencies: expo install react-native react-navigation expo-av expo-speech expo-location expo-notifications expo-image-picker @expo/vector-icons",
+        "For state management: npm install redux react-redux or use React Context",
+        "For multilingual: npm install i18n-js expo-localization",
+        "Set up ESLint and Prettier for code quality: expo install eslint prettier eslint-config-expo",
+        "Configure app.json for app name, icon, splash screen (use green theme as in mockups)"
+      ]
+    },
+    {
+      "step_number": 2,
+      "step_title": "Set Up Gemma 3 for On-Device AI",
+      "details": [
+        "Download Gemma 3 model from Google (assume quantized version for mobile; e.g., Gemma-2B or similar lightweight variant)",
+        "Integrate TensorFlow.js for React Native: npm install @tensorflow/tfjs @tensorflow/tfjs-react-native",
+        "Load the model: Use tf.loadGraphModel() or convert Gemma to TF.js format via Hugging Face if needed",
+        "Implement on-device inference: Create a service file (e.g., aiService.js) to handle text input, tokenization, and generation using Gemma for responses",
+        "Handle multilingual: Use Gemma's built-in multilingual capabilities or integrate a translation layer",
+        "Test offline: Ensure model runs without internet; optimize for mobile RAM/CPU (quantize to 4-bit if possible)",
+        "Error handling: Fallback to pre-defined responses if model fails"
+      ]
+    },
+    {
+      "step_number": 3,
+      "step_title": "Set Up ElevenLabs for Multilingual TTS",
+      "details": [
+        "Sign up for ElevenLabs API and get API key",
+        "Install axios or fetch for API calls: npm install axios",
+        "Create a voiceService.js: Function to send text to ElevenLabs API endpoint (/v1/text-to-speech) with voice_id, language, and get audio stream",
+        "Integrate with Expo AV: Use expo-av to play the returned audio buffer",
+        "Multilingual support: Specify language codes (e.g., en, hi) in API calls; ElevenLabs supports multiple languages",
+        "Offline fallback: Use Expo Speech (expo-speech.speak()) for basic TTS when no internet",
+        "Voice customization: Use natural-sounding voices for agricultural context",
+        "Rate limiting and error handling: Handle API quotas and network errors"
+      ]
+    },
+    {
+      "step_number": 4,
+      "step_title": "Implement App Navigation and Structure",
+      "details": [
+        "Use @react-navigation/bottom-tabs for bottom navigation: Home, Advisory, Assistant (Voice), Market, Settings",
+        "Stack navigator for sub-screens (e.g., Pest Detection under Advisory)",
+        "Theme: Dark green background (#003300), light green accents (#00FF00), white text",
+        "Icons: Use @expo/vector-icons for house, leaf, microphone, chart, gear",
+        "SafeAreaView for notch handling"
+      ]
+    },
+    {
+      "step_number": 5,
+      "step_title": "Build Core Screens Based on Mockups",
+      "sub_steps": [
+        {
+          "screen": "Welcome Screen",
+          "details": "Checkmark icon, 'Welcome to AgriAssist', Language dropdown (English default), Continue button. On press, save language and navigate to Home."
+        },
+        {
+          "screen": "Home Screen",
+          "details": "Search bar, Today's Advisory card (image, title, description), Weather card (temp, icon, alert), Quick Access grid (Soil Health, Pest Detection, Market Prices buttons)."
+        },
+        {
+          "screen": "Voice Assistant",
+          "details": "Chat bubbles (AI asks for location), Location display, Voice waveform, Mic button. Use react-native-voice for STT, Gemma for processing query, ElevenLabs for TTS response."
+        },
+        {
+          "screen": "Pest & Disease Detection",
+          "details": "Upload button (expo-image-picker), Recent scans list with thumbnails. Use TF.js model (e.g., pre-trained plant disease model) for analysis."
+        },
+        {
+          "screen": "Soil Health",
+          "details": "Input fields (pH, Organic %, NPK), Analyze button (use Gemma or rule-based logic for recommendations), Fertilizer list cards, Application method text."
+        },
+        {
+          "screen": "Market Prices",
+          "details": "Search bar, Tabs for crops, List with images, prices, percentage changes (fetch from API)."
+        },
+        {
+          "screen": "Settings",
+          "details": "List items: Location (expo-location), Notifications toggle, Language selector, Voice Support toggle, Report/Feedback links."
+        }
+      ]
+    },
+    {
+      "step_number": 6,
+      "step_title": "Integrate AI and Voice Features",
+      "details": [
+        "Voice Flow: Tap mic -> STT -> Send text to Gemma -> Generate response -> TTS via ElevenLabs -> Play audio",
+        "Personalization: Use location from Expo Location, weather from API, to contextualize Gemma prompts (e.g., 'Best pest practices in Lagos, Nigeria')",
+        "Offline Mode: Cache models and use local data"
+      ]
+    },
+    {
+      "step_number": 7,
+      "step_title": "Handle Data and APIs",
+      "details": [
+        "Weather: Integrate OpenWeatherMap API with location",
+        "Market: Use public APIs or mock data initially",
+        "Storage: Use AsyncStorage for user prefs, language, history",
+        "Analytics: Integrate Expo Analytics for feedback data"
+      ]
+    },
+    {
+      "step_number": 8,
+      "step_title": "Testing and Optimization",
+      "details": [
+        "Unit tests: Jest for components",
+        "E2E: Detox or Appium",
+        "Performance: Optimize AI inference, compress images",
+        "Multilingual Testing: Test with Hindi, etc.",
+        "Accessibility: VoiceOver support"
+      ]
+    },
+    {
+      "step_number": 9,
+      "step_title": "Deployment",
+      "details": [
+        "Build: expo build:android and expo build:ios",
+        "Publish: Expo publish for OTA updates",
+        "Stores: Upload to Google Play and App Store",
+        "Monitoring: Use Sentry for errors"
+      ]
+    }
+  ],
+  "additional_guidelines": [
+    "Ensure app is offline-capable where possible",
+    "Follow SIH 2025 themes: Sustainability, Inclusivity",
+    "Code Structure: Folders for screens, components, services, assets",
+    "Security: API keys in .env, no hardcoding",
+    "Scalability: Modular code for future additions"
+  ]
+}
