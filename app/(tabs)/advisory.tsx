@@ -1,11 +1,110 @@
-import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ImageBackground } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, ImageBackground, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, Clock, MapPin, AlertTriangle } from 'lucide-react-native';
+import { WeatherAPI, WeatherData } from '../../utils/weatherAPI';
 
 export default function AdvisoryScreen() {
-  const advisories = [
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [weatherLoading, setWeatherLoading] = useState(true);
+
+  useEffect(() => {
+    loadWeatherData();
+  }, []);
+
+  const loadWeatherData = async () => {
+    try {
+      const { weather } = await WeatherAPI.fetchCompleteWeatherData();
+      setWeatherData(weather);
+    } catch (error) {
+      console.log('Failed to load weather data for advisories:', error);
+    }
+    setWeatherLoading(false);
+  };
+
+  const generateWeatherBasedAdvisories = () => {
+    if (!weatherData) return staticAdvisories;
+
+    const advisories = [...staticAdvisories];
+    const current = weatherData.current_weather;
+    const hourly = weatherData.hourly;
+    const daily = weatherData.daily;
+
+    // High precipitation probability advisory
+    if (hourly.precipitation_probability[0] > 70) {
+      advisories.unshift({
+        id: Date.now() + 1,
+        crop: 'All Crops',
+        title: 'High Rain Risk - Immediate Action Required',
+        description: `${hourly.precipitation_probability[0]}% chance of rain in next hour. Postpone spraying operations and secure equipment. Check drainage systems.`,
+        priority: 'high',
+        timeAgo: 'Just now',
+        location: 'Your Location',
+        image: 'https://images.pexels.com/photos/1463917/pexels-photo-1463917.jpeg'
+      });
+    }
+
+    // High humidity fungal risk
+    if (hourly.relative_humidity_2m[0] > 80 && current.temperature > 20) {
+      advisories.unshift({
+        id: Date.now() + 2,
+        crop: 'All Crops',
+        title: 'Fungal Disease Alert',
+        description: `High humidity (${hourly.relative_humidity_2m[0]}%) and warm temperature create ideal fungal conditions. Monitor crops closely and consider preventive treatments.`,
+        priority: 'high',
+        timeAgo: '5 min ago',
+        location: 'Your Location',
+        image: 'https://images.pexels.com/photos/2132227/pexels-photo-2132227.jpeg'
+      });
+    }
+
+    // Strong wind advisory
+    if (hourly.wind_speed_10m[0] > 20) {
+      advisories.unshift({
+        id: Date.now() + 3,
+        crop: 'All Crops',
+        title: 'Strong Wind Warning',
+        description: `Wind speed ${hourly.wind_speed_10m[0].toFixed(1)} km/h. Avoid aerial spraying and secure loose structures. Wind may damage tall crops.`,
+        priority: 'medium',
+        timeAgo: '10 min ago',
+        location: 'Your Location',
+        image: 'https://images.pexels.com/photos/1459339/pexels-photo-1459339.jpeg'
+      });
+    }
+
+    // Optimal soil conditions
+    if (hourly.soil_temperature_6cm[0] > 15 && hourly.soil_moisture_3_9cm[0] > 0.2 && hourly.soil_moisture_3_9cm[0] < 0.35) {
+      advisories.push({
+        id: Date.now() + 4,
+        crop: 'Spring Crops',
+        title: 'Optimal Planting Conditions',
+        description: `Soil temperature ${hourly.soil_temperature_6cm[0].toFixed(1)}°C with ideal moisture levels. Excellent conditions for planting spring crops.`,
+        priority: 'low',
+        timeAgo: '1 hour ago',
+        location: 'Your Location',
+        image: 'https://images.pexels.com/photos/547263/pexels-photo-547263.jpeg'
+      });
+    }
+
+    // UV protection advisory
+    if (hourly.uv_index[0] > 7) {
+      advisories.push({
+        id: Date.now() + 5,
+        crop: 'All Crops',
+        title: 'High UV Protection Needed',
+        description: `UV index ${hourly.uv_index[0]} - Very high. Protect workers and sensitive crops. Consider shade cloth for vulnerable plants.`,
+        priority: 'medium',
+        timeAgo: '30 min ago',
+        location: 'Your Location',
+        image: 'https://images.pexels.com/photos/1459324/pexels-photo-1459324.jpeg'
+      });
+    }
+
+    return advisories;
+  };
+
+  const staticAdvisories = [
     {
       id: 1,
       crop: 'Wheat',
@@ -47,6 +146,8 @@ export default function AdvisoryScreen() {
     }
   };
 
+  const advisories = generateWeatherBasedAdvisories();
+
   return (
     <LinearGradient
       colors={['#0f172a', '#1e293b']}
@@ -86,27 +187,33 @@ export default function AdvisoryScreen() {
           <View className="px-6">
             <Text className="text-white text-2xl font-bold mb-4">All Advisories</Text>
             
-            {advisories.map((advisory) => (
-              <TouchableOpacity
-                key={advisory.id}
-                className="bg-slate-800/30 rounded-2xl mb-4 overflow-hidden"
-              >
-                <ImageBackground
-                  source={{ uri: advisory.image }}
-                  className="h-32"
+            {weatherLoading ? (
+              <View className="bg-slate-800/30 rounded-2xl p-6 items-center">
+                <ActivityIndicator size="large" color="#22c55e" />
+                <Text className="text-slate-400 mt-2">Loading weather-based advisories...</Text>
+              </View>
+            ) : (
+              advisories.map((advisory) => (
+                <TouchableOpacity
+                  key={advisory.id}
+                  className="bg-slate-800/30 rounded-2xl mb-4 overflow-hidden"
                 >
-                  <LinearGradient
-                    colors={['transparent', 'rgba(0,0,0,0.8)']}
-                    className="flex-1 justify-end p-4"
+                  <ImageBackground
+                    source={{ uri: advisory.image }}
+                    className="h-32"
                   >
-                    <View className="flex-row items-center justify-between mb-2">
-                      <Text className="text-white text-lg font-bold">
-                        {advisory.crop} Advisory
-                      </Text>
-                      <View className={`px-2 py-1 rounded-full ${getPriorityColor(advisory.priority)}`}>
-                        <Text className="text-white text-xs font-semibold uppercase">
-                          {advisory.priority}
+                    <LinearGradient
+                      colors={['transparent', 'rgba(0,0,0,0.8)']}
+                      className="flex-1 justify-end p-4"
+                    >
+                      <View className="flex-row items-center justify-between mb-2">
+                        <Text className="text-white text-lg font-bold">
+                          {advisory.crop} Advisory
                         </Text>
+                        <View className={`px-2 py-1 rounded-full ${getPriorityColor(advisory.priority)}`}>
+                          <Text className="text-white text-xs font-semibold uppercase">
+                            {advisory.priority}
+                          </Text>
                       </View>
                     </View>
                   </LinearGradient>
@@ -136,7 +243,8 @@ export default function AdvisoryScreen() {
                   </View>
                 </View>
               </TouchableOpacity>
-            ))}
+              ))
+            )}
           </View>
         </ScrollView>
       </SafeAreaView>

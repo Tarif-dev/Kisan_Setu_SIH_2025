@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ImageBackground, TextInput } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, ImageBackground, TextInput, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
@@ -12,12 +12,50 @@ import {
   Bug, 
   TrendingUp 
 } from 'lucide-react-native';
+import { WeatherAPI, WeatherData } from '../../utils/weatherAPI';
 
 export default function HomeScreen() {
-  const weatherData = {
-    temperature: '28°C',
-    condition: 'Partly Cloudy',
-    alert: 'Heavy rainfall expected tomorrow. Prepare for waterlogging.'
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [weatherLoading, setWeatherLoading] = useState(false);
+
+  // Load weather data on component mount
+  useEffect(() => {
+    loadWeatherData();
+  }, []);
+
+  const loadWeatherData = async () => {
+    setWeatherLoading(true);
+    try {
+      const { weather } = await WeatherAPI.fetchCompleteWeatherData();
+      setWeatherData(weather);
+    } catch (error) {
+      console.log('Failed to load weather data:', error);
+      // Fall back to default data if weather fails
+    }
+    setWeatherLoading(false);
+  };
+
+  const getWeatherAlert = () => {
+    if (!weatherData) return 'Weather data loading...';
+    
+    const precipitation = weatherData.hourly.precipitation_probability[0];
+    const windSpeed = weatherData.hourly.wind_speed_10m[0];
+    const uvIndex = weatherData.hourly.uv_index[0];
+    
+    if (precipitation > 70) {
+      return `High chance of rain (${precipitation}%) - Protect crops and avoid spraying.`;
+    }
+    if (windSpeed > 20) {
+      return `Strong winds (${windSpeed.toFixed(1)} km/h) - Avoid field spraying today.`;
+    }
+    if (uvIndex > 7) {
+      return `High UV index (${uvIndex}) - Ensure crop protection and worker safety.`;
+    }
+    if (weatherData.current_weather.temperature > 35) {
+      return `High temperature (${weatherData.current_weather.temperature}°C) - Monitor crop stress and irrigation.`;
+    }
+    
+    return `Weather conditions favorable for farming activities.`;
   };
 
   const quickAccessItems = [
@@ -100,11 +138,28 @@ export default function HomeScreen() {
             {/* Current Conditions */}
             <View className="bg-slate-800/30 rounded-2xl p-6 mb-4">
               <Text className="text-slate-400 text-base mb-2">Current Conditions</Text>
-              <View className="flex-row items-center justify-between">
-                <Text className="text-white text-3xl font-bold">{weatherData.temperature}</Text>
-                <Sun size={48} color="#fbbf24" />
-              </View>
-              <Text className="text-slate-400 text-lg">{weatherData.condition}</Text>
+              {weatherLoading ? (
+                <View className="flex-row items-center justify-center py-4">
+                  <ActivityIndicator size="large" color="#22c55e" />
+                  <Text className="text-slate-400 ml-2">Loading weather...</Text>
+                </View>
+              ) : weatherData ? (
+                <>
+                  <View className="flex-row items-center justify-between">
+                    <Text className="text-white text-3xl font-bold">{weatherData.current_weather.temperature}°C</Text>
+                    <Sun size={48} color="#fbbf24" />
+                  </View>
+                  <Text className="text-slate-400 text-lg">{WeatherAPI.getWeatherDescription(weatherData.current_weather.weathercode)}</Text>
+                  <Text className="text-slate-300 text-sm mt-2">
+                    Feels like {weatherData.hourly.apparent_temperature[0].toFixed(1)}°C • Humidity {weatherData.hourly.relative_humidity_2m[0]}%
+                  </Text>
+                </>
+              ) : (
+                <View className="flex-row items-center justify-between">
+                  <Text className="text-white text-3xl font-bold">--°C</Text>
+                  <Sun size={48} color="#fbbf24" />
+                </View>
+              )}
             </View>
 
             {/* Weather Alert */}
@@ -114,7 +169,7 @@ export default function HomeScreen() {
                 <Text className="text-blue-400 text-base font-semibold ml-2">Weather Alert</Text>
               </View>
               <Text className="text-slate-300 text-base leading-5">
-                {weatherData.alert}
+                {getWeatherAlert()}
               </Text>
             </View>
           </View>
