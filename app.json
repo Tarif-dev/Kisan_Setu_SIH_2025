@@ -1,22 +1,33 @@
 {
   "expo": {
-    "name": "SIH2025",
-    "slug": "SIH2025",
+    "name": "AgriAssist",
+    "slug": "agri-assist",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "sih2025",
-    "userInterfaceStyle": "automatic",
+    "scheme": "agriassist",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
+    "description": "Your intelligent farming companion for better crop management, weather insights, and agricultural guidance.",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sih2025.agriassist"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#1F2937"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.sih2025.agriassist",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.INTERNET",
+        "android.permission.VIBRATE"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -25,18 +36,28 @@
     },
     "plugins": [
       "expo-router",
+      "expo-notifications",
+      "expo-location",
+      "expo-camera",
+      "expo-media-library",
+      "expo-av",
       [
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#1F2937"
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "agri-assist-sih2025"
+      }
     }
   }
 }
