@@ -1,75 +1,148 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import React from 'react';
+import { View, Text, ScrollView, TouchableOpacity, ImageBackground, TextInput } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { 
+  Menu, 
+  Bell, 
+  Search, 
+  Sun, 
+  Droplets, 
+  Leaf, 
+  Bug, 
+  TrendingUp 
+} from 'lucide-react-native';
 
 export default function HomeScreen() {
+  const weatherData = {
+    temperature: '28°C',
+    condition: 'Partly Cloudy',
+    alert: 'Heavy rainfall expected tomorrow. Prepare for waterlogging.'
+  };
+
+  const quickAccessItems = [
+    { 
+      icon: Leaf, 
+      title: 'Soil Health', 
+      color: 'bg-emerald-500',
+      description: 'Check soil conditions'
+    },
+    { 
+      icon: Bug, 
+      title: 'Pest Detection', 
+      color: 'bg-orange-500',
+      description: 'Identify pests & diseases'
+    },
+    { 
+      icon: TrendingUp, 
+      title: 'Market Prices', 
+      color: 'bg-blue-500',
+      description: 'Current market rates'
+    }
+  ];
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <LinearGradient
+      colors={['#0f172a', '#1e293b']}
+      style={{ flex: 1 }}
+    >
+      <SafeAreaView className="flex-1">
+        {/* Header */}
+        <View className="flex-row justify-between items-center px-6 py-4">
+          <TouchableOpacity>
+            <Menu size={24} color="#ffffff" />
+          </TouchableOpacity>
+          <Text className="text-white text-xl font-bold">AgriAssist</Text>
+          <TouchableOpacity>
+            <Bell size={24} color="#ffffff" />
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+          {/* Search Bar */}
+          <View className="px-6 mb-6">
+            <View className="bg-slate-800/50 rounded-2xl px-4 py-3 flex-row items-center">
+              <Search size={20} color="#64748b" />
+              <TextInput
+                placeholder="Search for crops, diseases..."
+                placeholderTextColor="#64748b"
+                className="flex-1 ml-3 text-white text-base"
+              />
+            </View>
+          </View>
+
+          {/* Today's Advisory */}
+          <View className="px-6 mb-6">
+            <Text className="text-white text-2xl font-bold mb-4">Today's Advisory</Text>
+            <ImageBackground
+              source={{ uri: 'https://images.pexels.com/photos/2132227/pexels-photo-2132227.jpeg' }}
+              className="rounded-2xl overflow-hidden"
+            >
+              <LinearGradient
+                colors={['transparent', 'rgba(0,0,0,0.8)']}
+                className="p-6 min-h-[200px] justify-end"
+              >
+                <Text className="text-white text-xl font-bold mb-2">Wheat Advisory</Text>
+                <Text className="text-slate-300 text-base mb-3 leading-5">
+                  High risk of fungal diseases due to recent rainfall. Apply fungicide within 48 hours.
+                </Text>
+                <TouchableOpacity className="bg-primary-500 rounded-xl py-2 px-4 self-start">
+                  <Text className="text-white font-semibold">Learn More</Text>
+                </TouchableOpacity>
+              </LinearGradient>
+            </ImageBackground>
+          </View>
+
+          {/* Weather Section */}
+          <View className="px-6 mb-6">
+            <Text className="text-white text-2xl font-bold mb-4">Weather</Text>
+            
+            {/* Current Conditions */}
+            <View className="bg-slate-800/30 rounded-2xl p-6 mb-4">
+              <Text className="text-slate-400 text-base mb-2">Current Conditions</Text>
+              <View className="flex-row items-center justify-between">
+                <Text className="text-white text-3xl font-bold">{weatherData.temperature}</Text>
+                <Sun size={48} color="#fbbf24" />
+              </View>
+              <Text className="text-slate-400 text-lg">{weatherData.condition}</Text>
+            </View>
+
+            {/* Weather Alert */}
+            <View className="bg-blue-900/30 border border-blue-700 rounded-2xl p-6">
+              <View className="flex-row items-center mb-2">
+                <Droplets size={20} color="#3b82f6" />
+                <Text className="text-blue-400 text-base font-semibold ml-2">Weather Alert</Text>
+              </View>
+              <Text className="text-slate-300 text-base leading-5">
+                {weatherData.alert}
+              </Text>
+            </View>
+          </View>
+
+          {/* Quick Access */}
+          <View className="px-6 mb-8">
+            <Text className="text-white text-2xl font-bold mb-4">Quick Access</Text>
+            <View className="flex-row flex-wrap justify-between">
+              {quickAccessItems.map((item, index) => (
+                <TouchableOpacity
+                  key={index}
+                  className="bg-slate-800/30 rounded-2xl p-6 mb-4 w-[48%] items-center"
+                >
+                  <View className={`w-16 h-16 rounded-2xl ${item.color} items-center justify-center mb-3`}>
+                    <item.icon size={28} color="#ffffff" />
+                  </View>
+                  <Text className="text-white text-base font-semibold text-center mb-1">
+                    {item.title}
+                  </Text>
+                  <Text className="text-slate-400 text-sm text-center">
+                    {item.description}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
