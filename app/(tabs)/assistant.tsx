@@ -1,7 +1,8 @@
+import { voiceAssistantService } from "@/services/voiceAssistantService";
+import { useVoiceAssistantStore } from "@/stores/voiceAssistantStore";
 import { Ionicons } from "@expo/vector-icons";
-import * as Speech from "expo-speech";
-import React, { useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 interface VoiceAssistantMessage {
   id: string;
@@ -14,30 +15,62 @@ const Assistant = () => {
   const [messages, setMessages] = useState<VoiceAssistantMessage[]>([
     {
       id: "1",
-      text: "Hello! I'm your AgriAssist voice assistant. Ask me anything about farming, crops, or agriculture.",
+      text: "Hello! I'm your AgriAssist voice assistant. Ask me anything about farming, crops, or agriculture. Tap the microphone to start speaking.",
       isUser: false,
       timestamp: new Date(),
     },
   ]);
-  const [isListening, setIsListening] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
 
-  const startListening = () => {
-    setIsListening(true);
+  const {
+    isListening,
+    isProcessing,
+    isSpeaking,
+    transcript,
+    response,
+    error,
+    language,
+    isSupported,
+    startListening,
+    stopListening,
+    setLanguage,
+    clearError,
+    reset,
+    checkSupport,
+    stopAll,
+  } = useVoiceAssistantStore();
 
-    // Simulate speech recognition
-    setTimeout(() => {
-      const userMessage =
-        "What are the best practices for managing pests in my area?";
-      addMessage(userMessage, true);
-      setIsListening(false);
+  useEffect(() => {
+    // Check voice support on component mount
+    checkSupport();
 
-      // Generate AI response
-      setTimeout(() => {
-        generateResponse(userMessage);
-      }, 1000);
-    }, 3000);
-  };
+    // Cleanup on unmount
+    return () => {
+      stopAll();
+    };
+  }, []);
+
+  useEffect(() => {
+    // Add user message when transcript is available
+    if (transcript && transcript.trim()) {
+      addMessage(transcript, true);
+    }
+  }, [transcript]);
+
+  useEffect(() => {
+    // Add AI response when available
+    if (response && response.trim()) {
+      addMessage(response, false);
+    }
+  }, [response]);
+
+  useEffect(() => {
+    // Show error alerts
+    if (error) {
+      Alert.alert("Voice Assistant Error", error, [
+        { text: "OK", onPress: clearError },
+      ]);
+    }
+  }, [error]);
 
   const addMessage = (text: string, isUser: boolean) => {
     const newMessage: VoiceAssistantMessage = {
@@ -49,50 +82,70 @@ const Assistant = () => {
     setMessages((prev) => [...prev, newMessage]);
   };
 
-  const generateResponse = async (userQuery: string) => {
-    // Mock AI responses based on common farming queries
-    const responses = {
-      pest: "For pest management in your area, I recommend: 1) Regular field inspection every 2-3 days, 2) Use neem-based organic pesticides, 3) Install yellow sticky traps, 4) Maintain crop rotation, 5) Remove infected plants immediately. Apply treatments during early morning or evening for best results.",
-      weather:
-        "Based on current weather conditions, there's a 70% chance of rain tomorrow. I recommend covering young plants and ensuring proper drainage. Heavy rainfall is expected, so prepare for potential waterlogging.",
-      fertilizer:
-        "For healthy crop growth, apply balanced NPK fertilizer in a 4:2:1 ratio. Use organic compost to improve soil structure. Apply fertilizers in split doses - 50% during sowing and 50% during flowering stage.",
-      default:
-        "I understand your concern. As an agricultural assistant, I recommend consulting with local agricultural experts for specific guidance. You can also visit your nearest Krishi Vigyan Kendra for detailed advice.",
-    };
-
-    let response = responses.default;
-    if (userQuery.toLowerCase().includes("pest")) response = responses.pest;
-    else if (userQuery.toLowerCase().includes("weather"))
-      response = responses.weather;
-    else if (userQuery.toLowerCase().includes("fertilizer"))
-      response = responses.fertilizer;
-
-    addMessage(response, false);
-
-    // Speak the response
-    speakText(response);
-  };
-
-  const speakText = async (text: string) => {
-    try {
-      setIsSpeaking(true);
-      await Speech.speak(text, {
-        language: "en",
-        pitch: 1.0,
-        rate: 0.8,
-        onDone: () => setIsSpeaking(false),
-        onError: () => setIsSpeaking(false),
-      });
-    } catch (error) {
-      console.error("Speech error:", error);
-      setIsSpeaking(false);
+  const handleVoiceInput = async () => {
+    if (isListening) {
+      await stopListening();
+    } else {
+      if (!isSupported.recording) {
+        Alert.alert(
+          "Microphone Access Required",
+          "Please allow microphone access to use voice features.",
+          [{ text: "OK" }]
+        );
+        return;
+      }
+      await startListening();
     }
   };
 
-  const stopSpeaking = () => {
-    Speech.stop();
-    setIsSpeaking(false);
+  const handleLanguageChange = (newLanguage: string) => {
+    setLanguage(newLanguage);
+    addMessage(
+      `Language changed to ${newLanguage === "en-US" ? "English" : newLanguage === "hi-IN" ? "Hindi" : "Punjabi"}`,
+      false
+    );
+  };
+
+  const getVoiceButtonColor = () => {
+    if (isListening) return "#EF4444"; // Red when listening
+    if (isProcessing || isSpeaking) return "#F59E0B"; // Orange when processing
+    return "#22C55E"; // Green when ready
+  };
+
+  const getVoiceButtonIcon = () => {
+    if (isListening) return "mic";
+    if (isProcessing) return "hourglass";
+    if (isSpeaking) return "volume-high";
+    return "mic-outline";
+  };
+
+  const getStatusText = () => {
+    if (isListening) return "Listening... Tap to stop";
+    if (isProcessing) return "Processing your request...";
+    if (isSpeaking) return "Speaking response...";
+    return "Tap microphone to speak";
+  };
+
+  const handleQuickQuestion = async (question: string) => {
+    // Add user message immediately
+    addMessage(question, true);
+
+    // Process the question through the voice assistant service
+    try {
+      const response = await voiceAssistantService.getAIResponse(question);
+      addMessage(response.text, false);
+
+      // Optionally speak the response
+      if (response.text) {
+        await voiceAssistantService.speakResponse(response.text);
+      }
+    } catch (error) {
+      console.error("Error processing quick question:", error);
+      addMessage(
+        "Sorry, I couldn't process your question at the moment. Please try again.",
+        false
+      );
+    }
   };
 
   const quickQuestions = [
@@ -155,10 +208,7 @@ const Assistant = () => {
           {quickQuestions.map((question, index) => (
             <TouchableOpacity
               key={index}
-              onPress={() => {
-                addMessage(question, true);
-                setTimeout(() => generateResponse(question), 500);
-              }}
+              onPress={() => handleQuickQuestion(question)}
               className="bg-gray-700 rounded-full px-4 py-2 mr-3 border border-gray-600"
             >
               <Text className="text-gray-300 text-sm">{question}</Text>
@@ -171,22 +221,17 @@ const Assistant = () => {
       <View className="px-4 pb-8 pt-4">
         <View className="flex-row justify-center items-center space-x-4">
           <TouchableOpacity
-            onPress={startListening}
-            disabled={isListening || isSpeaking}
-            className={`w-20 h-20 rounded-full items-center justify-center ${
-              isListening ? "bg-red-500" : "bg-green-500"
-            }`}
+            onPress={handleVoiceInput}
+            disabled={isProcessing}
+            className={`w-20 h-20 rounded-full items-center justify-center`}
+            style={{ backgroundColor: getVoiceButtonColor() }}
           >
-            <Ionicons
-              name={isListening ? "stop" : "mic"}
-              size={32}
-              color="white"
-            />
+            <Ionicons name={getVoiceButtonIcon()} size={32} color="white" />
           </TouchableOpacity>
 
           {isSpeaking && (
             <TouchableOpacity
-              onPress={stopSpeaking}
+              onPress={stopAll}
               className="w-16 h-16 rounded-full items-center justify-center bg-red-500"
             >
               <Ionicons name="volume-off" size={24} color="white" />
@@ -195,11 +240,7 @@ const Assistant = () => {
         </View>
 
         <Text className="text-center text-gray-400 mt-4">
-          {isListening
-            ? "Listening... Tap to stop"
-            : isSpeaking
-              ? "Speaking... Tap to stop"
-              : "Tap to speak"}
+          {getStatusText()}
         </Text>
       </View>
 
