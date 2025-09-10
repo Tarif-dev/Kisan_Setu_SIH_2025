@@ -5,6 +5,7 @@ import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
+  Image,
   RefreshControl,
   ScrollView,
   Text,
@@ -75,146 +76,117 @@ const Home = () => {
       }
     >
       {/* Header */}
-      <View className="pt-12 pb-6 px-4 bg-gray-800">
-        <View className="flex-row items-center justify-between">
-          <View>
-            <Text className="text-2xl font-bold text-white">AgriAssist</Text>
-            <Text className="text-gray-400">Welcome back, Farmer</Text>
-          </View>
+      <View className="pt-12 pb-6 px-4 bg-gray-900">
+        <View className="flex-row items-center justify-between mb-4">
+          <TouchableOpacity>
+            <Ionicons name="menu" size={24} color="white" />
+          </TouchableOpacity>
+          <Text className="text-xl font-bold text-white">AgriAssist</Text>
           <TouchableOpacity
             onPress={() => Alert.alert("Notifications", "No new notifications")}
-            className="p-2"
           >
-            <Ionicons name="notifications" size={24} color="#22C55E" />
+            <Ionicons name="notifications" size={24} color="white" />
           </TouchableOpacity>
+        </View>
+
+        {/* Search Bar */}
+        <View className="bg-gray-800 rounded-xl flex-row items-center px-4 py-3">
+          <Ionicons name="search" size={20} color="#9CA3AF" />
+          <Text className="text-gray-400 ml-3 flex-1">
+            Search for crops, diseases...
+          </Text>
         </View>
       </View>
 
       {/* Today's Advisory */}
-      <View className="mx-4 mb-6 -mt-3">
-        <View className="bg-gray-800 rounded-2xl p-6 border border-gray-700">
-          <View className="flex-row items-center mb-4">
-            <Ionicons name="sunny" size={20} color="#22C55E" />
-            <Text className="text-lg font-semibold text-white ml-2">
-              Today's Advisory
-            </Text>
+      <View className="mx-4 mb-6">
+        <Text className="text-xl font-bold text-white mb-4">
+          Today's Advisory
+        </Text>
+        <View className="bg-gray-800 rounded-2xl overflow-hidden border border-gray-700">
+          {/* Advisory Image */}
+          <View className="h-40 bg-gradient-to-r from-yellow-600 to-orange-600 relative">
+            <View className="absolute inset-0 bg-black/20" />
+            <Image
+              source={{
+                uri: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&h=200&fit=crop",
+              }}
+              className="w-full h-full"
+              style={{ opacity: 0.7 }}
+            />
           </View>
 
-          <View className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 mb-4">
-            <View className="flex-row items-start">
-              <Ionicons name="warning" size={16} color="#EAB308" />
-              <View className="flex-1 ml-2">
-                <Text className="text-yellow-400 font-medium">
-                  Wheat Advisory
-                </Text>
-                <Text className="text-gray-300 text-sm mt-1">
-                  High risk of fungal diseases due to recent rainfall. Apply
-                  fungicide within 48 hours.
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          <TouchableOpacity
-            onPress={() => router.push("/(tabs)/advisory" as any)}
-            className="bg-green-500 rounded-xl py-3 px-4"
-          >
-            <Text className="text-white font-semibold text-center">
-              View Full Advisory
+          <View className="p-4">
+            <Text className="text-lg font-bold text-white mb-2">
+              Wheat Advisory
             </Text>
-          </TouchableOpacity>
+            <Text className="text-gray-300 text-sm mb-3 leading-5">
+              High risk of fungal diseases due to recent rainfall. Apply
+              fungicide within 48 hours.
+            </Text>
+            <TouchableOpacity
+              onPress={() => router.push("/(tabs)/advisory" as any)}
+              className="bg-transparent border border-gray-600 rounded-lg py-2 px-4 self-start"
+            >
+              <Text className="text-gray-300 font-medium">Learn More</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
       {/* Weather */}
       <View className="mx-4 mb-6">
-        <View className="bg-gray-800 rounded-2xl p-6 border border-gray-700">
-          <View className="flex-row items-center justify-between mb-4">
-            <Text className="text-lg font-semibold text-white">Weather</Text>
-            <TouchableOpacity onPress={fetchWeather}>
-              <Ionicons name="refresh" size={20} color="#22C55E" />
-            </TouchableOpacity>
-          </View>
+        <Text className="text-xl font-bold text-white mb-4">Weather</Text>
 
-          {weatherLoading ? (
-            <Text className="text-gray-400">Loading weather...</Text>
-          ) : weather ? (
+        {/* Current Conditions */}
+        <View className="bg-gray-800 rounded-2xl p-4 border border-gray-700 mb-4">
+          <Text className="text-gray-400 text-sm mb-2">Current Conditions</Text>
+          <View className="flex-row items-center justify-between">
             <View>
-              <View className="flex-row items-center justify-between">
-                <View>
-                  <Text className="text-3xl font-bold text-white">
-                    {Math.round(weather.temperature)}°C
-                  </Text>
-                  <Text className="text-gray-400 capitalize">
-                    {weather.description}
-                  </Text>
-                  <Text className="text-gray-500 text-sm">
-                    {location?.city || "Current Location"}
-                  </Text>
-                </View>
-                <Ionicons name="partly-sunny" size={48} color="#FFA500" />
-              </View>
-
-              <View className="flex-row justify-between mt-4 pt-4 border-t border-gray-700">
-                <View className="items-center">
-                  <Ionicons name="water" size={16} color="#60A5FA" />
-                  <Text className="text-gray-400 text-xs mt-1">Humidity</Text>
-                  <Text className="text-white font-medium">
-                    {weather.humidity}%
-                  </Text>
-                </View>
-                <View className="items-center">
-                  <Ionicons name="speedometer" size={16} color="#60A5FA" />
-                  <Text className="text-gray-400 text-xs mt-1">Wind</Text>
-                  <Text className="text-white font-medium">
-                    {weather.windSpeed} km/h
-                  </Text>
-                </View>
-                <View className="items-center">
-                  <Ionicons name="eye" size={16} color="#60A5FA" />
-                  <Text className="text-gray-400 text-xs mt-1">Visibility</Text>
-                  <Text className="text-white font-medium">
-                    {weather.visibility} km
-                  </Text>
-                </View>
-              </View>
+              <Text className="text-3xl font-bold text-white">
+                {weather ? Math.round(weather.temperature) : 28}°C
+              </Text>
+              <Text className="text-gray-400 capitalize">
+                {weather ? weather.description : "Partly Cloudy"}
+              </Text>
             </View>
-          ) : (
-            <Text className="text-gray-400">Unable to load weather data</Text>
-          )}
+            <Ionicons name="partly-sunny" size={48} color="#F59E0B" />
+          </View>
+        </View>
+
+        {/* Weather Alert */}
+        <View className="bg-blue-900/30 border border-blue-700/50 rounded-2xl p-4">
+          <View className="flex-row items-center">
+            <Ionicons name="water" size={20} color="#60A5FA" />
+            <View className="ml-3 flex-1">
+              <Text className="text-blue-400 font-medium">Weather Alert</Text>
+              <Text className="text-gray-300 text-sm mt-1">
+                Heavy rainfall expected tomorrow. Prepare for waterlogging.
+              </Text>
+            </View>
+          </View>
         </View>
       </View>
 
       {/* Quick Access */}
       <View className="mx-4 mb-8">
-        <Text className="text-lg font-semibold text-white mb-4">
-          Quick Access
-        </Text>
-        <View className="flex-row flex-wrap justify-between">
+        <Text className="text-xl font-bold text-white mb-4">Quick Access</Text>
+        <View className="flex-row justify-between">
           {quickAccessItems.map((item, index) => (
             <TouchableOpacity
               key={index}
               onPress={() => router.push(item.route as any)}
-              className="w-[48%] bg-gray-800 rounded-2xl p-4 mb-4 border border-gray-700"
+              className="bg-gray-800 rounded-2xl p-4 border border-gray-700 items-center flex-1 mx-1"
             >
-              <View className="items-center">
-                <View
-                  className="w-12 h-12 rounded-full items-center justify-center mb-3"
-                  style={{ backgroundColor: `${item.color}20` }}
-                >
-                  <Ionicons
-                    name={item.icon as any}
-                    size={24}
-                    color={item.color}
-                  />
-                </View>
-                <Text className="text-white font-medium text-center mb-1">
-                  {item.title}
-                </Text>
-                <Text className="text-gray-400 text-xs text-center">
-                  {item.description}
-                </Text>
+              <View
+                className="w-12 h-12 rounded-xl items-center justify-center mb-3"
+                style={{ backgroundColor: item.color }}
+              >
+                <Ionicons name={item.icon as any} size={24} color="white" />
               </View>
+              <Text className="text-white font-medium text-center text-xs">
+                {item.title}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>

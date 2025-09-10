@@ -35,7 +35,7 @@ const Market = () => {
     {
       id: "2",
       name: "Wheat",
-      price: 7.25,
+      price: 7.26,
       change: -0.08,
       changePercent: -0.8,
       unit: "per bushel",
@@ -62,38 +62,11 @@ const Market = () => {
     {
       id: "5",
       name: "Cotton",
-      price: 0.75,
+      price: 0.76,
       change: -0.05,
       changePercent: -0.6,
       unit: "per lb",
       icon: "cloud",
-    },
-    {
-      id: "6",
-      name: "Sugarcane",
-      price: 28.5,
-      change: 0.45,
-      changePercent: 1.8,
-      unit: "per ton",
-      icon: "leaf",
-    },
-    {
-      id: "7",
-      name: "Barley",
-      price: 6.8,
-      change: -0.15,
-      changePercent: -1.2,
-      unit: "per bushel",
-      icon: "nutrition",
-    },
-    {
-      id: "8",
-      name: "Oats",
-      price: 3.9,
-      change: 0.08,
-      changePercent: 0.9,
-      unit: "per bushel",
-      icon: "flower",
     },
   ]);
 

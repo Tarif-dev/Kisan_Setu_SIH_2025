@@ -2,7 +2,7 @@ import { voiceAssistantService } from "@/services/voiceAssistantService";
 import { useVoiceAssistantStore } from "@/stores/voiceAssistantStore";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
 
 interface VoiceAssistantMessage {
   id: string;
@@ -158,111 +158,87 @@ const Assistant = () => {
   return (
     <View className="flex-1 bg-gray-900">
       {/* Header */}
-      <View className="pt-12 pb-6 px-4 bg-gray-800">
-        <Text className="text-2xl font-bold text-white">Voice Assistant</Text>
-        <Text className="text-gray-400 mt-1">
-          Ask questions about farming and get instant advice
-        </Text>
+      <View className="pt-12 pb-4 px-4 bg-gray-900">
+        <View className="flex-row items-center">
+          <TouchableOpacity>
+            <Ionicons name="chevron-back" size={24} color="white" />
+          </TouchableOpacity>
+          <Text className="text-xl font-bold text-white ml-4">
+            Voice Assistant
+          </Text>
+        </View>
       </View>
 
-      {/* Messages */}
-      <ScrollView className="flex-1 px-4 py-4">
-        {messages.map((message) => (
-          <View
-            key={message.id}
-            className={`mb-4 ${message.isUser ? "items-end" : "items-start"}`}
-          >
-            <View
-              className={`max-w-[80%] rounded-2xl p-4 ${
-                message.isUser
-                  ? "bg-green-500"
-                  : "bg-gray-700 border border-gray-600"
-              }`}
-            >
+      {/* Chat Area */}
+      <View className="flex-1 px-4">
+        {/* Assistant Message */}
+        <View className="items-start mb-4">
+          <View className="flex-row items-start">
+            <View className="w-8 h-8 bg-green-500 rounded-full items-center justify-center mr-3">
+              <Ionicons name="person" size={16} color="white" />
+            </View>
+            <View className="bg-gray-800 rounded-2xl rounded-tl-sm p-4 max-w-[80%] border border-gray-700">
               <Text className="text-white text-base leading-6">
-                {message.text}
-              </Text>
-              <Text className="text-gray-300 text-xs mt-2">
-                {message.timestamp.toLocaleTimeString()}
+                To provide the best advice, could you please share your current
+                location?
               </Text>
             </View>
           </View>
-        ))}
+        </View>
 
+        {/* Location Info */}
+        <View className="items-center mb-6">
+          <Text className="text-gray-400 text-sm">
+            Location: Lagos, Nigeria
+          </Text>
+        </View>
+
+        {/* Voice Visualization */}
         {isListening && (
-          <View className="items-center mb-4">
-            <View className="bg-gray-700 rounded-2xl p-4 border border-green-500">
-              <View className="flex-row items-center">
-                <View className="w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse" />
-                <Text className="text-white">Listening...</Text>
-              </View>
+          <View className="items-center mb-6">
+            <View className="flex-row items-center justify-center space-x-1">
+              {[...Array(11)].map((_, i) => (
+                <View
+                  key={i}
+                  className="bg-green-500 rounded-full"
+                  style={{
+                    width: 4,
+                    height: Math.random() * 40 + 10,
+                    opacity: 0.7 + Math.random() * 0.3,
+                  }}
+                />
+              ))}
             </View>
           </View>
         )}
-      </ScrollView>
 
-      {/* Quick Questions */}
-      <View className="px-4 py-2">
-        <Text className="text-white font-medium mb-3">Quick Questions:</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {quickQuestions.map((question, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => handleQuickQuestion(question)}
-              className="bg-gray-700 rounded-full px-4 py-2 mr-3 border border-gray-600"
-            >
-              <Text className="text-gray-300 text-sm">{question}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-
-      {/* Voice Controls */}
-      <View className="px-4 pb-8 pt-4">
-        <View className="flex-row justify-center items-center space-x-4">
-          <TouchableOpacity
-            onPress={handleVoiceInput}
-            disabled={isProcessing}
-            className={`w-20 h-20 rounded-full items-center justify-center`}
-            style={{ backgroundColor: getVoiceButtonColor() }}
-          >
-            <Ionicons name={getVoiceButtonIcon()} size={32} color="white" />
-          </TouchableOpacity>
-
-          {isSpeaking && (
-            <TouchableOpacity
-              onPress={stopAll}
-              className="w-16 h-16 rounded-full items-center justify-center bg-red-500"
-            >
-              <Ionicons name="volume-off" size={24} color="white" />
-            </TouchableOpacity>
-          )}
-        </View>
-
-        <Text className="text-center text-gray-400 mt-4">
-          {getStatusText()}
-        </Text>
-      </View>
-
-      {/* Language Selection */}
-      <View className="px-4 pb-4">
-        <View className="bg-gray-800 rounded-xl p-4 border border-gray-700">
-          <Text className="text-white font-medium mb-3">Language:</Text>
-          <View className="flex-row justify-between">
-            {["English", "हिंदी", "ਪੰਜਾਬੀ"].map((lang, index) => (
-              <TouchableOpacity
-                key={index}
-                className={`flex-1 py-2 px-3 rounded-lg mx-1 ${
-                  index === 0 ? "bg-green-500" : "bg-gray-700"
-                }`}
-              >
-                <Text className="text-white text-center font-medium">
-                  {lang}
-                </Text>
-              </TouchableOpacity>
-            ))}
+        {/* User Message */}
+        {transcript && (
+          <View className="items-center mb-6">
+            <View className="bg-gray-800 rounded-2xl p-4 border border-gray-700">
+              <Text className="text-white text-center">
+                "
+                {transcript ||
+                  "What are the best practices for managing pests in my area?"}
+                "
+              </Text>
+            </View>
           </View>
-        </View>
+        )}
+      </View>
+
+      {/* Voice Button */}
+      <View className="items-center pb-8">
+        <TouchableOpacity
+          onPress={handleVoiceInput}
+          disabled={isProcessing}
+          className="w-20 h-20 rounded-full items-center justify-center mb-4"
+          style={{ backgroundColor: getVoiceButtonColor() }}
+        >
+          <Ionicons name={getVoiceButtonIcon()} size={32} color="white" />
+        </TouchableOpacity>
+
+        <Text className="text-gray-400 text-center">Tap to speak</Text>
       </View>
     </View>
   );
