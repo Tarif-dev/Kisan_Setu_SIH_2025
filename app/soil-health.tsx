@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -20,6 +20,46 @@ import {
   SoilData,
   soilHealthService,
 } from "../services/soilHealthService";
+
+// Memoized InputField component to prevent keyboard closing
+const InputField = memo(
+  ({
+    label,
+    value,
+    onChangeText,
+    placeholder,
+    unit,
+  }: {
+    label: string;
+    value: string;
+    onChangeText: (text: string) => void;
+    placeholder: string;
+    unit?: string;
+  }) => (
+    <View className="mb-4">
+      <Text className="text-gray-300 text-sm mb-2">{label}</Text>
+      <View className="bg-gray-800 rounded-xl border border-gray-700">
+        <TextInput
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={placeholder}
+          placeholderTextColor="#9CA3AF"
+          className="p-4 text-white text-base"
+          keyboardType="numeric"
+          autoCorrect={false}
+          autoComplete="off"
+          selectTextOnFocus={false}
+          blurOnSubmit={false}
+        />
+        {unit && (
+          <Text className="absolute right-4 top-4 text-gray-500 text-sm">
+            {unit}
+          </Text>
+        )}
+      </View>
+    </View>
+  )
+);
 
 const SoilHealth = () => {
   const [soilData, setSoilData] = useState<SoilData>({});
@@ -43,6 +83,37 @@ const SoilHealth = () => {
   // Check location permission and auto-fetch location on component mount
   useEffect(() => {
     checkLocationPermissionAndFetch();
+  }, []);
+
+  // Memoized input handlers to prevent keyboard closing
+  const handlePhChange = useCallback((text: string) => {
+    if (text === "" || /^\d*\.?\d*$/.test(text)) {
+      setInputValues((prev) => ({ ...prev, ph: text }));
+    }
+  }, []);
+
+  const handleOrganicMatterChange = useCallback((text: string) => {
+    if (text === "" || /^\d*\.?\d*$/.test(text)) {
+      setInputValues((prev) => ({ ...prev, organicMatter: text }));
+    }
+  }, []);
+
+  const handleNitrogenChange = useCallback((text: string) => {
+    if (text === "" || /^\d*\.?\d*$/.test(text)) {
+      setInputValues((prev) => ({ ...prev, nitrogen: text }));
+    }
+  }, []);
+
+  const handlePhosphorusChange = useCallback((text: string) => {
+    if (text === "" || /^\d*\.?\d*$/.test(text)) {
+      setInputValues((prev) => ({ ...prev, phosphorus: text }));
+    }
+  }, []);
+
+  const handlePotassiumChange = useCallback((text: string) => {
+    if (text === "" || /^\d*\.?\d*$/.test(text)) {
+      setInputValues((prev) => ({ ...prev, potassium: text }));
+    }
   }, []);
 
   const checkLocationPermissionAndFetch = async () => {
@@ -254,41 +325,6 @@ const SoilHealth = () => {
     }
   };
 
-  const InputField = ({
-    label,
-    value,
-    onChangeText,
-    placeholder,
-    unit,
-  }: {
-    label: string;
-    value: string;
-    onChangeText: (text: string) => void;
-    placeholder: string;
-    unit?: string;
-  }) => (
-    <View className="mb-4">
-      <Text className="text-gray-300 text-sm mb-2">{label}</Text>
-      <View className="bg-gray-800 rounded-xl border border-gray-700">
-        <TextInput
-          value={value}
-          onChangeText={onChangeText}
-          placeholder={placeholder}
-          placeholderTextColor="#9CA3AF"
-          className="p-4 text-white text-base"
-          keyboardType="numeric"
-          autoCorrect={false}
-          autoComplete="off"
-        />
-        {unit && (
-          <Text className="absolute right-4 top-4 text-gray-500 text-sm">
-            {unit}
-          </Text>
-        )}
-      </View>
-    </View>
-  );
-
   const CropCard = ({ crop }: { crop: CropRecommendation }) => (
     <View className="bg-gray-800 rounded-xl p-4 border border-gray-700 mb-3">
       <View className="flex-row items-center justify-between mb-2">
@@ -484,12 +520,7 @@ const SoilHealth = () => {
           <InputField
             label="Soil pH Level"
             value={inputValues.ph}
-            onChangeText={(text) => {
-              // Allow empty string, numbers, and decimal points (including partial decimals like "6.")
-              if (text === "" || /^\d*\.?\d*$/.test(text)) {
-                setInputValues((prev) => ({ ...prev, ph: text }));
-              }
-            }}
+            onChangeText={handlePhChange}
             placeholder="6.0 - 8.0"
             unit="pH"
           />
@@ -497,12 +528,7 @@ const SoilHealth = () => {
           <InputField
             label="Organic Matter"
             value={inputValues.organicMatter}
-            onChangeText={(text) => {
-              // Allow empty string, numbers, and decimal points (including partial decimals like "6." or ".5")
-              if (text === "" || /^\d*\.?\d*$/.test(text)) {
-                setInputValues((prev) => ({ ...prev, organicMatter: text }));
-              }
-            }}
+            onChangeText={handleOrganicMatterChange}
             placeholder="1.0 - 5.0"
             unit="%"
           />
@@ -510,12 +536,7 @@ const SoilHealth = () => {
           <InputField
             label="Nitrogen (N)"
             value={inputValues.nitrogen}
-            onChangeText={(text) => {
-              // Allow empty string, numbers, and decimal points (including partial decimals like "6." or ".5")
-              if (text === "" || /^\d*\.?\d*$/.test(text)) {
-                setInputValues((prev) => ({ ...prev, nitrogen: text }));
-              }
-            }}
+            onChangeText={handleNitrogenChange}
             placeholder="Available nitrogen"
             unit="kg/ha"
           />
@@ -523,12 +544,7 @@ const SoilHealth = () => {
           <InputField
             label="Phosphorus (P)"
             value={inputValues.phosphorus}
-            onChangeText={(text) => {
-              // Allow empty string, numbers, and decimal points (including partial decimals like "6." or ".5")
-              if (text === "" || /^\d*\.?\d*$/.test(text)) {
-                setInputValues((prev) => ({ ...prev, phosphorus: text }));
-              }
-            }}
+            onChangeText={handlePhosphorusChange}
             placeholder="Available phosphorus"
             unit="kg/ha"
           />
@@ -536,12 +552,7 @@ const SoilHealth = () => {
           <InputField
             label="Potassium (K)"
             value={inputValues.potassium}
-            onChangeText={(text) => {
-              // Allow empty string, numbers, and decimal points (including partial decimals like "6." or ".5")
-              if (text === "" || /^\d*\.?\d*$/.test(text)) {
-                setInputValues((prev) => ({ ...prev, potassium: text }));
-              }
-            }}
+            onChangeText={handlePotassiumChange}
             placeholder="Available potassium"
             unit="kg/ha"
           />
