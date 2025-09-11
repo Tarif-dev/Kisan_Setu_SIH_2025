@@ -1,25 +1,28 @@
-import { voiceAssistantService } from "@/services/voiceAssistantService";
 import { useVoiceAssistantStore } from "@/stores/voiceAssistantStore";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  FlatList,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
-interface VoiceAssistantMessage {
+interface Message {
   id: string;
   text: string;
   isUser: boolean;
   timestamp: Date;
+  language?: string;
 }
 
 const Assistant = () => {
-  const [messages, setMessages] = useState<VoiceAssistantMessage[]>([
-    {
-      id: "1",
-      text: "Hello! I'm your AgriAssist voice assistant. Ask me anything about farming, crops, or agriculture. Tap the microphone to start speaking.",
-      isUser: false,
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [textInput, setTextInput] = useState("");
 
   const {
     isListening,
@@ -30,8 +33,10 @@ const Assistant = () => {
     error,
     language,
     isSupported,
+    supportedLanguages,
     startListening,
     stopListening,
+    processTextQuery,
     setLanguage,
     clearError,
     reset,
@@ -42,6 +47,9 @@ const Assistant = () => {
   useEffect(() => {
     // Check voice support on component mount
     checkSupport();
+
+    // Add welcome message based on current language
+    addWelcomeMessage();
 
     // Cleanup on unmount
     return () => {
@@ -72,12 +80,47 @@ const Assistant = () => {
     }
   }, [error]);
 
+  useEffect(() => {
+    // Add welcome message when language changes
+    addWelcomeMessage();
+  }, [language]);
+
+  const addWelcomeMessage = () => {
+    const welcomeMessages = {
+      "en-US":
+        "Hello! I'm your AgriAssist voice assistant. I can help you with farming questions in English, Hindi, Punjabi, or Bengali. Ask me anything about crops, pests, fertilizers, or farming techniques.",
+      "hi-IN":
+        "नमस्ते! मैं आपका कृषि सहायक हूं। मैं खेती के बारे में आपके सवालों का जवाब हिंदी, अंग्रेजी, पंजाबी या बंगाली में दे सकता हूं। फसल, कीट, उर्वरक या खेती की तकनीक के बारे में कुछ भी पूछें।",
+      "pa-IN":
+        "ਸਤ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ ਤੁਹਾਡਾ ਖੇਤੀ ਸਹਾਇਕ ਹਾਂ। ਮੈਂ ਪੰਜਾਬੀ, ਹਿੰਦੀ, ਅੰਗਰੇਜ਼ੀ ਜਾਂ ਬੰਗਾਲੀ ਵਿੱਚ ਖੇਤੀ ਬਾਰੇ ਤੁਹਾਡੇ ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਦੇ ਸਕਦਾ ਹਾਂ। ਫਸਲਾਂ, ਕੀੜੇ, ਖਾਦ ਜਾਂ ਖੇਤੀ ਦੀਆਂ ਤਕਨੀਕਾਂ ਬਾਰੇ ਕੁਝ ਵੀ ਪੁੱਛੋ।",
+      "bn-IN":
+        "নমস্কার! আমি আপনার কৃষি সহায়ক। আমি বাংলা, হিন্দি, ইংরেজি বা পাঞ্জাবিতে কৃষি সম্পর্কে আপনার প্রশ্নের উত্তর দিতে পারি। ফসল, কীটপতঙ্গ, সার বা কৃষি কৌশল সম্পর্কে যেকোনো কিছু জিজ্ঞাসা করুন।",
+    };
+
+    // Only add welcome message if no messages exist
+    if (messages.length === 0) {
+      const welcomeText =
+        welcomeMessages[language as keyof typeof welcomeMessages] ||
+        welcomeMessages["en-US"];
+      setMessages([
+        {
+          id: "welcome-" + Date.now(),
+          text: welcomeText,
+          isUser: false,
+          timestamp: new Date(),
+          language: language,
+        },
+      ]);
+    }
+  };
+
   const addMessage = (text: string, isUser: boolean) => {
-    const newMessage: VoiceAssistantMessage = {
+    const newMessage: Message = {
       id: Date.now().toString(),
       text,
       isUser,
       timestamp: new Date(),
+      language: language,
     };
     setMessages((prev) => [...prev, newMessage]);
   };
@@ -98,12 +141,22 @@ const Assistant = () => {
     }
   };
 
+  const handleTextSubmit = async () => {
+    if (textInput.trim()) {
+      const userText = textInput.trim();
+      setTextInput("");
+      addMessage(userText, true);
+      await processTextQuery(userText);
+    }
+  };
+
   const handleLanguageChange = (newLanguage: string) => {
     setLanguage(newLanguage);
-    addMessage(
-      `Language changed to ${newLanguage === "en-US" ? "English" : newLanguage === "hi-IN" ? "Hindi" : "Punjabi"}`,
-      false
-    );
+    const langName =
+      supportedLanguages.find(
+        (lang: { code: string; name: string }) => lang.code === newLanguage
+      )?.name || "Unknown";
+    addMessage(`Language changed to ${langName}`, false);
   };
 
   const getVoiceButtonColor = () => {
@@ -123,122 +176,166 @@ const Assistant = () => {
     if (isListening) return "Listening... Tap to stop";
     if (isProcessing) return "Processing your request...";
     if (isSpeaking) return "Speaking response...";
-    return "Tap microphone to speak";
+    return "Tap microphone to speak or type your question";
   };
 
-  const handleQuickQuestion = async (question: string) => {
-    // Add user message immediately
-    addMessage(question, true);
-
-    // Process the question through the voice assistant service
-    try {
-      const response = await voiceAssistantService.getAIResponse(question);
-      addMessage(response.text, false);
-
-      // Optionally speak the response
-      if (response.text) {
-        await voiceAssistantService.speakResponse(response.text);
-      }
-    } catch (error) {
-      console.error("Error processing quick question:", error);
-      addMessage(
-        "Sorry, I couldn't process your question at the moment. Please try again.",
-        false
-      );
-    }
-  };
-
-  const quickQuestions = [
-    "What fertilizer should I use for wheat?",
-    "How to prevent crop diseases?",
-    "When should I harvest my crops?",
-    "Best irrigation practices?",
-  ];
+  const renderMessage = ({ item }: { item: Message }) => (
+    <View className={`mb-4 ${item.isUser ? "items-end" : "items-start"}`}>
+      <View className="flex-row items-start max-w-[85%]">
+        {!item.isUser && (
+          <View className="w-8 h-8 bg-green-500 rounded-full items-center justify-center mr-3">
+            <Ionicons name="leaf" size={16} color="white" />
+          </View>
+        )}
+        <View
+          className={`rounded-2xl p-4 ${
+            item.isUser
+              ? "bg-green-500 rounded-br-sm"
+              : "bg-gray-800 border border-gray-700 rounded-tl-sm"
+          }`}
+        >
+          <Text
+            className={`text-base leading-6 ${
+              item.isUser ? "text-white" : "text-white"
+            }`}
+          >
+            {item.text}
+          </Text>
+          <Text
+            className={`text-xs mt-2 ${
+              item.isUser ? "text-green-100" : "text-gray-400"
+            }`}
+          >
+            {item.timestamp.toLocaleTimeString()}
+          </Text>
+        </View>
+        {item.isUser && (
+          <View className="w-8 h-8 bg-blue-500 rounded-full items-center justify-center ml-3">
+            <Ionicons name="person" size={16} color="white" />
+          </View>
+        )}
+      </View>
+    </View>
+  );
 
   return (
     <View className="flex-1 bg-gray-900">
       {/* Header */}
-      <View className="pt-12 pb-4 px-4 bg-gray-900">
-        <View className="flex-row items-center">
-          <TouchableOpacity>
-            <Ionicons name="chevron-back" size={24} color="white" />
-          </TouchableOpacity>
-          <Text className="text-xl font-bold text-white ml-4">
-            Voice Assistant
-          </Text>
+      <View className="pt-12 pb-4 px-4 bg-gray-900 border-b border-gray-800">
+        <View className="flex-row items-center justify-between">
+          <View className="flex-row items-center">
+            <TouchableOpacity onPress={() => router.back()}>
+              <Ionicons name="chevron-back" size={24} color="white" />
+            </TouchableOpacity>
+            <Text className="text-xl font-bold text-white ml-4">
+              Voice Assistant
+            </Text>
+          </View>
+
+          {/* Language Selector */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            className="flex-row"
+          >
+            {supportedLanguages.map(
+              (lang: {
+                code: string;
+                name: string;
+                speechCode: string;
+                geminiPrompt: string;
+              }) => (
+                <TouchableOpacity
+                  key={lang.code}
+                  onPress={() => handleLanguageChange(lang.code)}
+                  className={`mx-1 px-3 py-1 rounded-full ${
+                    language === lang.code ? "bg-green-500" : "bg-gray-700"
+                  }`}
+                >
+                  <Text
+                    className={`text-xs font-medium ${
+                      language === lang.code ? "text-white" : "text-gray-300"
+                    }`}
+                  >
+                    {lang.name}
+                  </Text>
+                </TouchableOpacity>
+              )
+            )}
+          </ScrollView>
         </View>
       </View>
 
       {/* Chat Area */}
-      <View className="flex-1 px-4">
-        {/* Assistant Message */}
-        <View className="items-start mb-4">
-          <View className="flex-row items-start">
-            <View className="w-8 h-8 bg-green-500 rounded-full items-center justify-center mr-3">
-              <Ionicons name="person" size={16} color="white" />
-            </View>
-            <View className="bg-gray-800 rounded-2xl rounded-tl-sm p-4 max-w-[80%] border border-gray-700">
-              <Text className="text-white text-base leading-6">
-                To provide the best advice, could you please share your current
-                location?
-              </Text>
-            </View>
+      <FlatList
+        data={messages}
+        renderItem={renderMessage}
+        keyExtractor={(item) => item.id}
+        className="flex-1 px-4 pt-4"
+        showsVerticalScrollIndicator={false}
+      />
+
+      {/* Voice Visualization */}
+      {isListening && (
+        <View className="items-center py-4">
+          <View className="flex-row items-center justify-center space-x-1">
+            {[...Array(11)].map((_, i) => (
+              <View
+                key={i}
+                className="bg-green-500 rounded-full"
+                style={{
+                  width: 4,
+                  height: Math.random() * 40 + 10,
+                  opacity: 0.7 + Math.random() * 0.3,
+                }}
+              />
+            ))}
           </View>
         </View>
+      )}
 
-        {/* Location Info */}
-        <View className="items-center mb-6">
-          <Text className="text-gray-400 text-sm">
-            Location: Lagos, Nigeria
-          </Text>
-        </View>
-
-        {/* Voice Visualization */}
-        {isListening && (
-          <View className="items-center mb-6">
-            <View className="flex-row items-center justify-center space-x-1">
-              {[...Array(11)].map((_, i) => (
-                <View
-                  key={i}
-                  className="bg-green-500 rounded-full"
-                  style={{
-                    width: 4,
-                    height: Math.random() * 40 + 10,
-                    opacity: 0.7 + Math.random() * 0.3,
-                  }}
-                />
-              ))}
-            </View>
-          </View>
-        )}
-
-        {/* User Message */}
-        {transcript && (
-          <View className="items-center mb-6">
-            <View className="bg-gray-800 rounded-2xl p-4 border border-gray-700">
-              <Text className="text-white text-center">
-                "
-                {transcript ||
-                  "What are the best practices for managing pests in my area?"}
-                "
-              </Text>
-            </View>
-          </View>
-        )}
+      {/* Status Text */}
+      <View className="px-4 py-2">
+        <Text className="text-gray-400 text-center text-sm">
+          {getStatusText()}
+        </Text>
       </View>
 
-      {/* Voice Button */}
-      <View className="items-center pb-8">
-        <TouchableOpacity
-          onPress={handleVoiceInput}
-          disabled={isProcessing}
-          className="w-20 h-20 rounded-full items-center justify-center mb-4"
-          style={{ backgroundColor: getVoiceButtonColor() }}
-        >
-          <Ionicons name={getVoiceButtonIcon()} size={32} color="white" />
-        </TouchableOpacity>
+      {/* Input Area */}
+      <View className="px-4 pb-4">
+        {/* Text Input */}
+        <View className="flex-row items-center mb-4 bg-gray-800 rounded-xl border border-gray-700">
+          <TextInput
+            value={textInput}
+            onChangeText={setTextInput}
+            placeholder="Type your farming question..."
+            placeholderTextColor="#9CA3AF"
+            className="flex-1 p-4 text-white"
+            multiline
+            onSubmitEditing={handleTextSubmit}
+          />
+          <TouchableOpacity
+            onPress={handleTextSubmit}
+            disabled={!textInput.trim() || isProcessing}
+            className={`p-3 m-2 rounded-lg ${
+              textInput.trim() && !isProcessing ? "bg-green-500" : "bg-gray-600"
+            }`}
+          >
+            <Ionicons name="send" size={20} color="white" />
+          </TouchableOpacity>
+        </View>
 
-        <Text className="text-gray-400 text-center">Tap to speak</Text>
+        {/* Voice Button */}
+        <View className="items-center">
+          <TouchableOpacity
+            onPress={handleVoiceInput}
+            disabled={isProcessing}
+            className="w-16 h-16 rounded-full items-center justify-center"
+            style={{ backgroundColor: getVoiceButtonColor() }}
+          >
+            <Ionicons name={getVoiceButtonIcon()} size={28} color="white" />
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );

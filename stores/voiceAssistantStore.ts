@@ -10,12 +10,18 @@ interface VoiceAssistantState {
   error: string | null;
   language: string;
   isSupported: { recording: boolean; speech: boolean };
+  supportedLanguages: Array<{
+    code: string;
+    name: string;
+    speechCode: string;
+    geminiPrompt: string;
+  }>;
 }
 
 interface VoiceAssistantActions {
   startListening: () => Promise<void>;
   stopListening: () => Promise<void>;
-  processVoiceQuery: (transcript: string) => Promise<void>;
+  processTextQuery: (text: string) => Promise<void>;
   setLanguage: (language: string) => void;
   clearError: () => void;
   reset: () => void;
@@ -36,6 +42,7 @@ export const useVoiceAssistantStore = create<VoiceAssistantStore>(
     error: null,
     language: "en-US",
     isSupported: { recording: false, speech: false },
+    supportedLanguages: voiceAssistantService.getSupportedLanguages(),
 
     // Actions
     startListening: async () => {
@@ -43,79 +50,86 @@ export const useVoiceAssistantStore = create<VoiceAssistantStore>(
         set({ isListening: true, error: null, transcript: "" });
         await voiceAssistantService.startListening();
 
-        // Auto-stop listening after 5 seconds for demo
+        // Auto-stop listening after 10 seconds to prevent infinite recording
         setTimeout(async () => {
           const { isListening } = get();
           if (isListening) {
             await get().stopListening();
           }
-        }, 5000);
+        }, 10000);
       } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Failed to start listening";
+        console.error("Failed to start listening:", error);
         set({
           isListening: false,
-          error: errorMessage,
+          error:
+            error instanceof Error
+              ? error.message
+              : "Failed to start voice recording",
         });
       }
     },
 
     stopListening: async () => {
       try {
-        set({ isProcessing: true });
-        const result = await voiceAssistantService.stopListening();
+        set({ isListening: false, isProcessing: true });
 
-        set({
-          isListening: false,
-          transcript: result.transcript,
-          isProcessing: false,
-        });
+        // Get transcript from recording
+        const transcript = await voiceAssistantService.stopListening();
 
-        // Process the transcript
-        await get().processVoiceQuery(result.transcript);
+        if (transcript && transcript.trim()) {
+          set({ transcript });
+
+          // Process the transcript
+          await get().processTextQuery(transcript);
+        } else {
+          set({ isProcessing: false, error: "No speech detected" });
+        }
       } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Failed to stop listening";
+        console.error("Failed to stop listening:", error);
         set({
           isListening: false,
           isProcessing: false,
-          error: errorMessage,
+          error:
+            error instanceof Error
+              ? error.message
+              : "Failed to process voice input",
         });
       }
     },
 
-    processVoiceQuery: async (transcript: string) => {
+    processTextQuery: async (text: string) => {
       try {
         set({ isProcessing: true, error: null });
 
-        // Get AI response from Gemini
-        const aiResponse =
-          await voiceAssistantService.getAIResponse(transcript);
+        // Get AI response
+        const response = await voiceAssistantService.getAIResponse(text);
 
         set({
-          response: aiResponse.text,
+          response: response.text,
           isProcessing: false,
           isSpeaking: true,
         });
 
         // Speak the response
-        await voiceAssistantService.speakResponse(aiResponse.text);
+        await voiceAssistantService.speakResponse(response.text);
 
         set({ isSpeaking: false });
       } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Failed to process query";
+        console.error("Failed to process query:", error);
         set({
           isProcessing: false,
           isSpeaking: false,
-          error: errorMessage,
+          error:
+            error instanceof Error
+              ? error.message
+              : "Failed to process your question",
         });
       }
     },
 
     setLanguage: (language: string) => {
-      set({ language });
       voiceAssistantService.setLanguage(language);
+      set({ language });
     },
 
     clearError: () => {
@@ -124,21 +138,30 @@ export const useVoiceAssistantStore = create<VoiceAssistantStore>(
 
     reset: () => {
       set({
-        transcript: "",
-        response: "",
-        error: null,
         isListening: false,
         isProcessing: false,
         isSpeaking: false,
+        transcript: "",
+        response: "",
+        error: null,
       });
     },
 
     checkSupport: async () => {
       try {
-        const support = await voiceAssistantService.checkVoiceSupport();
-        set({ isSupported: support });
+        // Check if device supports recording and speech
+        set({
+          isSupported: {
+            recording: true, // Assume supported, will be checked during actual usage
+            speech: true,
+          },
+        });
       } catch (error) {
-        set({ isSupported: { recording: false, speech: false } });
+        console.error("Failed to check support:", error);
+        set({
+          isSupported: { recording: false, speech: false },
+          error: "Voice features not supported on this device",
+        });
       }
     },
 
@@ -149,14 +172,9 @@ export const useVoiceAssistantStore = create<VoiceAssistantStore>(
           isListening: false,
           isProcessing: false,
           isSpeaking: false,
-          error: null,
         });
       } catch (error) {
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "Failed to stop voice operations";
-        set({ error: errorMessage });
+        console.error("Failed to stop all operations:", error);
       }
     },
   })

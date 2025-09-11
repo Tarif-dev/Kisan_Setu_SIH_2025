@@ -1,11 +1,11 @@
-// Voice Assistant Service with Gemini AI Integration
+// Voice Assistant Service with Real Gemini AI Integration and Multilingual Support
 import { Audio } from "expo-av";
 import * as Speech from "expo-speech";
 import { geminiService } from "./geminiService";
 
 interface VoiceResponse {
   text: string;
-  audioUrl?: string;
+  language: string;
 }
 
 interface VoiceSettings {
@@ -15,10 +15,11 @@ interface VoiceSettings {
   volume: number;
 }
 
-interface RecognitionResult {
-  transcript: string;
-  confidence: number;
-  isFinal: boolean;
+interface SupportedLanguage {
+  code: string;
+  name: string;
+  speechCode: string;
+  geminiPrompt: string;
 }
 
 class VoiceAssistantService {
@@ -27,9 +28,40 @@ class VoiceAssistantService {
   private isProcessing = false;
   private currentLanguage = "en-US";
 
+  private supportedLanguages: SupportedLanguage[] = [
+    {
+      code: "en-US",
+      name: "English",
+      speechCode: "en",
+      geminiPrompt:
+        "Respond in simple English that a farmer with basic education can understand. Use short sentences and explain technical terms.",
+    },
+    {
+      code: "hi-IN",
+      name: "Hindi",
+      speechCode: "hi",
+      geminiPrompt:
+        "किसान की सरल हिंदी में जवाब दें। छोटे वाक्य इस्तेमाल करें और तकनीकी शब्दों को समझाएं। जवाब केवल हिंदी में दें।",
+    },
+    {
+      code: "pa-IN",
+      name: "Punjabi",
+      speechCode: "pa",
+      geminiPrompt:
+        "ਕਿਸਾਨ ਦੀ ਸਰਲ ਪੰਜਾਬੀ ਵਿੱਚ ਜਵਾਬ ਦਿਓ। ਛੋਟੇ ਵਾਕ ਵਰਤੋ ਅਤੇ ਤਕਨੀਕੀ ਸ਼ਬਦਾਂ ਨੂੰ ਸਮਝਾਓ। ਜਵਾਬ ਸਿਰਫ਼ ਪੰਜਾਬੀ ਵਿੱਚ ਦਿਓ।",
+    },
+    {
+      code: "bn-IN",
+      name: "Bengali",
+      speechCode: "bn",
+      geminiPrompt:
+        "কৃষকের সহজ বাংলায় উত্তর দিন। ছোট বাক্য ব্যবহার করুন এবং প্রযুক্তিগত শব্দগুলি ব্যাখ্যা করুন। শুধুমাত্র বাংলায় উত্তর দিন।",
+    },
+  ];
+
   private voiceSettings: VoiceSettings = {
     language: "en-US",
-    rate: 0.9,
+    rate: 0.8,
     pitch: 1.0,
     volume: 1.0,
   };
@@ -53,6 +85,31 @@ class VoiceAssistantService {
     }
   }
 
+  // Convert audio to text using speech recognition
+  private async convertSpeechToText(audioUri: string): Promise<string> {
+    try {
+      // Note: This is a placeholder implementation as React Native doesn't have built-in speech-to-text
+      // In a production app, you would use one of these services:
+      // 1. Google Speech-to-Text API
+      // 2. Azure Speech Services
+      // 3. AWS Transcribe
+      // 4. expo-speech-recognition (if available)
+
+      console.log("Converting audio to text from:", audioUri);
+
+      // For now, we'll return a placeholder that indicates the service needs to be implemented
+      // The actual implementation would send the audio file to a cloud service
+      throw new Error(
+        "Speech-to-text service not implemented. Please implement with Google Speech-to-Text API or similar service."
+      );
+    } catch (error) {
+      console.error("Speech-to-text conversion failed:", error);
+      throw new Error(
+        "Failed to convert speech to text. Please try again or type your question instead."
+      );
+    }
+  }
+
   // Start voice recording
   async startListening(): Promise<void> {
     try {
@@ -68,7 +125,7 @@ class VoiceAssistantService {
       }
 
       // Configure recording options
-      const recordingOptions: Audio.RecordingOptions = {
+      const recordingOptions = {
         android: {
           extension: ".m4a",
           outputFormat: Audio.AndroidOutputFormat.MPEG_4,
@@ -98,246 +155,212 @@ class VoiceAssistantService {
       this.recording = new Audio.Recording();
       await this.recording.prepareToRecordAsync(recordingOptions);
       await this.recording.startAsync();
-      this.isRecording = true;
 
-      console.log("Voice recording started");
+      this.isRecording = true;
+      console.log("Recording started");
     } catch (error) {
       console.error("Failed to start recording:", error);
       throw error;
     }
   }
 
-  // Stop recording and process speech
-  async stopListening(): Promise<RecognitionResult> {
+  // Stop voice recording and get transcript
+  async stopListening(): Promise<string> {
     try {
       if (!this.isRecording || !this.recording) {
-        throw new Error("No active recording");
+        throw new Error("No recording in progress");
       }
 
-      // Stop recording
       await this.recording.stopAndUnloadAsync();
       const uri = this.recording.getURI();
       this.isRecording = false;
 
-      console.log("Recording stopped, URI:", uri);
-
       if (!uri) {
-        throw new Error("No recording URI available");
+        throw new Error("Failed to get recording URI");
       }
 
-      // Process the audio file for speech recognition
-      const transcript = await this.processAudioForSpeech(uri);
+      console.log("Recording saved to:", uri);
 
-      return {
-        transcript,
-        confidence: 0.9,
-        isFinal: true,
-      };
+      // Convert audio to text using speech-to-text service
+      const transcript = await this.convertSpeechToText(uri);
+      console.log("Speech-to-text result:", transcript);
+
+      return transcript;
     } catch (error) {
       console.error("Failed to stop recording:", error);
-      this.isRecording = false;
       throw error;
     }
   }
 
-  // Process audio file and convert to text using Gemini
-  private async processAudioForSpeech(audioUri: string): Promise<string> {
-    try {
-      // For demo purposes, we'll return a mock transcript
-      // In production, you would use Google Speech-to-Text API or similar
-
-      // Read the audio file
-      const response = await fetch(audioUri);
-      const audioBlob = await response.blob();
-
-      // Convert to base64 for processing
-      const base64Audio = await this.blobToBase64(audioBlob);
-
-      // Since Gemini doesn't directly support audio-to-text,
-      // we'll simulate speech recognition for now
-      const mockTranscripts = [
-        "What is the best fertilizer for wheat crops?",
-        "How do I control pests in my tomato plants?",
-        "When should I water my crops?",
-        "What are the signs of nitrogen deficiency?",
-        "How to prepare soil for planting?",
-        "What is the weather forecast for farming?",
-        "Tell me about crop rotation benefits",
-        "How to identify plant diseases?",
-      ];
-
-      // Return a random mock transcript for demo
-      const transcript =
-        mockTranscripts[Math.floor(Math.random() * mockTranscripts.length)];
-      console.log("Speech recognition result:", transcript);
-
-      return transcript;
-    } catch (error) {
-      console.error("Speech processing error:", error);
-      return "How can I help you with farming today?";
-    }
-  }
-
-  // Convert blob to base64
-  private blobToBase64(blob: Blob): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        resolve(base64String.split(",")[1]); // Remove data:audio/... prefix
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  }
-
-  // Get AI response from Gemini
+  // Get AI response using real Gemini API with retry logic
   async getAIResponse(userInput: string): Promise<VoiceResponse> {
     try {
       this.isProcessing = true;
 
-      // Add agricultural context to the prompt
-      const agriculturalContext = `
-        You are an expert agricultural assistant helping farmers. 
-        Provide practical, actionable advice in simple language.
-        Keep responses concise (2-3 sentences) and farmer-friendly.
-        Focus on: crop management, soil health, pest control, weather considerations, irrigation, fertilizers, and sustainable farming practices.
-      `;
+      const currentLang =
+        this.supportedLanguages.find(
+          (lang) => lang.code === this.currentLanguage
+        ) || this.supportedLanguages[0];
 
-      const response = await geminiService.generateTextResponse(
-        userInput,
-        agriculturalContext
-      );
+      // Create specialized agricultural prompt for Gemini
+      const agriculturalPrompt = `
+You are an expert agricultural advisor speaking to a farmer. 
+${currentLang.geminiPrompt}
 
-      console.log("Gemini AI response:", response.text);
+Guidelines:
+- Give practical, actionable advice
+- Use simple language that low-literacy farmers can understand
+- Focus on cost-effective solutions
+- Consider local farming conditions
+- Explain 'why' behind recommendations
+- Keep responses concise but complete
+- If technical terms are needed, explain them simply
 
-      return {
-        text: response.text,
-      };
-    } catch (error) {
-      console.error("AI response error:", error);
+Farmer's question: ${userInput}
 
-      // Fallback responses for common farming queries
-      const fallbackResponses = {
-        fertilizer:
-          "For balanced nutrition, use NPK fertilizer in 4:2:1 ratio. Apply during active growth periods and water thoroughly after application.",
-        pest: "Use integrated pest management: regular scouting, beneficial insects, neem oil sprays, and proper field hygiene to control pests effectively.",
-        water:
-          "Check soil moisture at 6-inch depth before watering. Water deeply but less frequently to encourage strong root development.",
-        soil: "Improve soil health with organic compost, proper drainage, and regular testing. Maintain pH between 6.0-7.0 for most crops.",
-        disease:
-          "Prevent diseases with good air circulation, avoid overhead watering, remove infected plants, and use disease-resistant varieties.",
-        weather:
-          "Monitor daily forecasts for farming activities. Adjust irrigation and pest control schedules based on weather conditions.",
-      };
+Please provide helpful agricultural advice:`;
 
-      // Find relevant fallback response
-      const userLower = userInput.toLowerCase();
-      let fallbackText =
-        "I'm here to help with your farming questions. Please try asking about crops, soil, pests, or weather.";
+      // Try Gemini API with retry logic
+      let response;
+      let retryCount = 0;
+      const maxRetries = 3;
 
-      for (const [keyword, response] of Object.entries(fallbackResponses)) {
-        if (userLower.includes(keyword)) {
-          fallbackText = response;
-          break;
+      while (retryCount < maxRetries) {
+        try {
+          response =
+            await geminiService.generateTextResponse(agriculturalPrompt);
+          break; // Success, exit retry loop
+        } catch (apiError) {
+          retryCount++;
+          console.log(`Gemini API attempt ${retryCount} failed:`, apiError);
+
+          if (retryCount >= maxRetries) {
+            throw apiError; // Max retries reached, throw the error
+          }
+
+          // Wait before retrying (exponential backoff)
+          await new Promise((resolve) =>
+            setTimeout(resolve, Math.pow(2, retryCount) * 1000)
+          );
         }
       }
 
-      return { text: fallbackText };
+      if (!response) {
+        throw new Error("Failed to get response after all retries");
+      }
+
+      return {
+        text: response.text,
+        language: this.currentLanguage,
+      };
+    } catch (error) {
+      console.error("Failed to get AI response:", error);
+
+      // Enhanced fallback responses with actual agricultural advice
+      const agriculturalFallbacks = {
+        "en-US": this.getOfflineAdvice(userInput, "en-US"),
+        "hi-IN": this.getOfflineAdvice(userInput, "hi-IN"),
+        "pa-IN": this.getOfflineAdvice(userInput, "pa-IN"),
+        "bn-IN": this.getOfflineAdvice(userInput, "bn-IN"),
+      };
+
+      return {
+        text:
+          agriculturalFallbacks[
+            this.currentLanguage as keyof typeof agriculturalFallbacks
+          ] || agriculturalFallbacks["en-US"],
+        language: this.currentLanguage,
+      };
     } finally {
       this.isProcessing = false;
     }
   }
 
-  // Speak the response using text-to-speech
+  // Get offline agricultural advice as fallback
+  private getOfflineAdvice(userInput: string, language: string): string {
+    const input = userInput.toLowerCase();
+
+    const englishAdvice = {
+      fertilizer:
+        "For healthy crops, use balanced NPK fertilizer (10:10:10 ratio). Apply 2-3 bags per acre during sowing and flowering stages. Always test soil pH first.",
+      pest: "For pest control: 1) Inspect crops daily, 2) Use neem oil spray in evening, 3) Install yellow sticky traps, 4) Practice crop rotation. Avoid chemical pesticides during flowering.",
+      water:
+        "Water deeply but less frequently. Check soil moisture 6 inches deep. Water early morning or evening. Use drip irrigation if possible to save water.",
+      disease:
+        "Prevent disease by ensuring good air circulation, avoiding overhead watering, and removing infected plants immediately. Use copper fungicide if needed.",
+      harvest:
+        "Harvest in early morning when it's cool. Use clean tools, handle gently, and store in cool, dry place immediately after harvesting.",
+      default:
+        "I'm currently offline, but here's general farming advice: Monitor your crops daily, maintain proper irrigation, use organic fertilizers when possible, and consult local agricultural experts for specific issues.",
+    };
+
+    const hindiAdvice = {
+      fertilizer:
+        "स्वस्थ फसल के लिए संतुलित NPK खाद (10:10:10) का उपयोग करें। प्रति एकड़ 2-3 बोरी बुआई और फूल आने के समय डालें। पहले मिट्टी की जांच कराएं।",
+      pest: "कीट नियंत्रण के लिए: 1) रोज फसल की जांच करें, 2) शाम को नीम का तेल छिड़कें, 3) पीले चिपचिपे जाल लगाएं, 4) फसल बदल-बदल कर उगाएं।",
+      water:
+        "गहरा लेकिन कम पानी दें। 6 इंच तक मिट्टी की नमी जांचें। सुबह या शाम पानी दें। ड्रिप सिंचाई का उपयोग करें।",
+      disease:
+        "बीमारी से बचने के लिए हवा का अच्छा प्रवाह रखें, ऊपर से पानी न दें, संक्रमित पौधे तुरंत हटाएं। जरूरत हो तो तांबे का फंगीसाइड उपयोग करें।",
+      harvest:
+        "सुबह जल्दी ठंडे समय में कटाई करें। साफ औजार का उपयोग करें, सावधानी से तोड़ें, तुरंत ठंडी सूखी जगह रखें।",
+      default:
+        "मैं अभी ऑफलाइन हूं, लेकिन सामान्य सलाह: रोज फसल की जांच करें, सही सिंचाई करें, जैविक खाद का उपयोग करें, स्थानीय कृषि विशेषज्ञों से सलाह लें।",
+    };
+
+    const advice = language === "hi-IN" ? hindiAdvice : englishAdvice;
+
+    // Simple keyword matching
+    if (input.includes("fertilizer") || input.includes("खाद"))
+      return advice.fertilizer;
+    if (input.includes("pest") || input.includes("कीट")) return advice.pest;
+    if (input.includes("water") || input.includes("पानी")) return advice.water;
+    if (input.includes("disease") || input.includes("बीमारी"))
+      return advice.disease;
+    if (input.includes("harvest") || input.includes("कटाई"))
+      return advice.harvest;
+
+    return advice.default;
+  }
+
+  // Speak response in user's language
   async speakResponse(text: string): Promise<void> {
     try {
-      // Stop any ongoing speech
-      await Speech.stop();
+      const currentLang =
+        this.supportedLanguages.find(
+          (lang) => lang.code === this.currentLanguage
+        ) || this.supportedLanguages[0];
 
-      // Configure speech options
-      const speechOptions = {
-        language: this.voiceSettings.language,
+      await Speech.speak(text, {
+        language: currentLang.speechCode,
         pitch: this.voiceSettings.pitch,
         rate: this.voiceSettings.rate,
         volume: this.voiceSettings.volume,
-        voice: undefined, // Use default voice
-      };
-
-      console.log("Speaking response:", text);
-
-      // Speak the text
-      await Speech.speak(text, speechOptions);
+      });
     } catch (error) {
-      console.error("Text-to-speech error:", error);
+      console.error("Failed to speak response:", error);
     }
-  }
-
-  // Complete voice interaction flow
-  async processVoiceInteraction(): Promise<VoiceResponse> {
-    try {
-      console.log("Starting voice interaction...");
-
-      // Start listening
-      await this.startListening();
-
-      // For demo, automatically stop after 3 seconds
-      // In production, you'd have a UI button to stop recording
-      setTimeout(async () => {
-        if (this.isRecording) {
-          const recognition = await this.stopListening();
-          const aiResponse = await this.getAIResponse(recognition.transcript);
-          await this.speakResponse(aiResponse.text);
-        }
-      }, 3000);
-
-      return { text: "Listening... Please speak your farming question." };
-    } catch (error) {
-      console.error("Voice interaction error:", error);
-      return { text: "Voice interaction failed. Please try again." };
-    }
-  }
-
-  // Update voice settings
-  updateVoiceSettings(settings: Partial<VoiceSettings>): void {
-    this.voiceSettings = { ...this.voiceSettings, ...settings };
-    console.log("Voice settings updated:", this.voiceSettings);
   }
 
   // Set language
-  setLanguage(language: string): void {
-    this.currentLanguage = language;
-    this.voiceSettings.language = language;
-    console.log("Language set to:", language);
-  }
-
-  // Check if voice features are available
-  async checkVoiceSupport(): Promise<{ recording: boolean; speech: boolean }> {
-    try {
-      const { status } = await Audio.requestPermissionsAsync();
-      const recordingSupported = status === "granted";
-      const speechSupported = (await Speech.isSpeakingAsync()) !== undefined;
-
-      return {
-        recording: recordingSupported,
-        speech: speechSupported,
-      };
-    } catch {
-      return { recording: false, speech: false };
+  setLanguage(languageCode: string): void {
+    if (this.supportedLanguages.some((lang) => lang.code === languageCode)) {
+      this.currentLanguage = languageCode;
+      this.voiceSettings.language = languageCode;
     }
   }
 
-  // Get current state
-  getState() {
-    return {
-      isRecording: this.isRecording,
-      isProcessing: this.isProcessing,
-      language: this.currentLanguage,
-      settings: this.voiceSettings,
-    };
+  // Get supported languages
+  getSupportedLanguages(): SupportedLanguage[] {
+    return this.supportedLanguages;
   }
 
-  // Stop all voice operations
+  // Get current language
+  getCurrentLanguage(): string {
+    return this.currentLanguage;
+  }
+
+  // Stop all operations
   async stopAll(): Promise<void> {
     try {
       if (this.isRecording && this.recording) {
@@ -345,14 +368,25 @@ class VoiceAssistantService {
         this.isRecording = false;
       }
       await Speech.stop();
-      this.isProcessing = false;
-      console.log("All voice operations stopped");
     } catch (error) {
-      console.error("Error stopping voice operations:", error);
+      console.error("Failed to stop all operations:", error);
     }
+  }
+
+  // Check if currently recording
+  isCurrentlyRecording(): boolean {
+    return this.isRecording;
+  }
+
+  // Check if currently processing
+  isCurrentlyProcessing(): boolean {
+    return this.isProcessing;
+  }
+
+  // Process text input (for testing without voice)
+  async processTextInput(text: string): Promise<VoiceResponse> {
+    return await this.getAIResponse(text);
   }
 }
 
-// Create and export singleton instance
 export const voiceAssistantService = new VoiceAssistantService();
-export default voiceAssistantService;

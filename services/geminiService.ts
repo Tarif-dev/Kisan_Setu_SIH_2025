@@ -15,7 +15,8 @@ interface GeminiImageAnalysis {
 
 class GeminiService {
   private apiKey: string;
-  private baseUrl: string = config.GEMINI_API_URL;
+  private baseUrl: string =
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
   constructor() {
     this.apiKey = config.GEMINI_API_KEY;
@@ -26,204 +27,300 @@ class GeminiService {
     context?: string
   ): Promise<GeminiResponse> {
     try {
-      // For demo purposes, return mock responses
-      // In production, replace with actual Gemini API call
+      if (!this.apiKey) {
+        throw new Error("Gemini API key not configured");
+      }
 
-      const farmingResponses: { [key: string]: string } = {
-        pest: "For effective pest management, I recommend: 1) Regular field monitoring every 2-3 days, 2) Use integrated pest management (IPM) approach, 3) Apply neem-based organic pesticides during early morning or evening, 4) Install yellow sticky traps for early detection, 5) Maintain crop rotation to break pest cycles. Always identify the specific pest before treatment for best results.",
-
-        fertilizer:
-          "For optimal fertilizer application: 1) Test your soil pH and nutrient levels first, 2) Apply balanced NPK fertilizer in 4:2:1 ratio for most crops, 3) Use organic compost to improve soil structure, 4) Split fertilizer application - 50% during sowing, 25% during vegetative growth, 25% during flowering, 5) Water thoroughly after application but avoid over-watering.",
-
-        weather:
-          "Based on current weather patterns: 1) Monitor daily weather forecasts for planning farm activities, 2) Heavy rain expected - ensure proper drainage and cover young plants, 3) During hot weather, irrigate early morning or late evening, 4) Use mulching to conserve soil moisture, 5) Adjust planting schedules based on seasonal weather patterns.",
-
-        irrigation:
-          "For efficient water management: 1) Check soil moisture at 6-inch depth before irrigating, 2) Water deeply but less frequently to encourage deep root growth, 3) Use drip irrigation or soaker hoses when possible, 4) Apply 1-2 inches of water per week including rainfall, 5) Mulch around plants to reduce water evaporation.",
-
-        harvest:
-          "Optimal harvesting guidelines: 1) Monitor crop maturity indicators specific to your crop type, 2) Harvest during cool morning hours when possible, 3) Use clean, sharp tools to prevent plant damage, 4) Handle produce gently to avoid bruising, 5) Store harvested crops in proper conditions immediately after harvesting.",
-
-        disease:
-          "For disease prevention and management: 1) Ensure good air circulation between plants, 2) Avoid overhead watering which can spread fungal diseases, 3) Remove and destroy infected plant materials, 4) Apply preventive fungicides during humid conditions, 5) Use disease-resistant crop varieties when available.",
+      const requestBody = {
+        contents: [
+          {
+            parts: [
+              {
+                text: context ? `${context}\n\n${prompt}` : prompt,
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          temperature: 0.7,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 1024,
+        },
+        safetySettings: [
+          {
+            category: "HARM_CATEGORY_HARASSMENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE",
+          },
+          {
+            category: "HARM_CATEGORY_HATE_SPEECH",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE",
+          },
+          {
+            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE",
+          },
+          {
+            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE",
+          },
+        ],
       };
 
-      // Determine response based on keywords in prompt
-      let response =
-        "I understand your farming question. For specific agricultural guidance, I recommend consulting with local agricultural experts or visiting your nearest Krishi Vigyan Kendra. They can provide location-specific advice based on your soil conditions and local climate.";
+      const response = await fetch(`${this.baseUrl}?key=${this.apiKey}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
 
-      const promptLower = prompt.toLowerCase();
-      for (const [keyword, keywordResponse] of Object.entries(
-        farmingResponses
-      )) {
-        if (promptLower.includes(keyword)) {
-          response = keywordResponse;
-          break;
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error("Gemini API Error:", errorData);
+
+        // Parse error for better error messages
+        try {
+          const errorJson = JSON.parse(errorData);
+          if (errorJson.error) {
+            const { code, message, status } = errorJson.error;
+            if (code === 503 || status === "UNAVAILABLE") {
+              throw new Error(
+                "Gemini service is temporarily overloaded. Please try again in a few moments."
+              );
+            } else if (code === 429) {
+              throw new Error(
+                "Too many requests. Please wait a moment before trying again."
+              );
+            } else if (code === 400) {
+              throw new Error(
+                "Invalid request. Please check your input and try again."
+              );
+            } else {
+              throw new Error(
+                `Gemini API error: ${message || "Unknown error"}`
+              );
+            }
+          }
+        } catch (parseError) {
+          // If we can't parse the error, use the original response status
+        }
+
+        throw new Error(`Gemini API request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.candidates && data.candidates.length > 0) {
+        const candidate = data.candidates[0];
+        if (
+          candidate.content &&
+          candidate.content.parts &&
+          candidate.content.parts.length > 0
+        ) {
+          return {
+            text: candidate.content.parts[0].text,
+            confidence: candidate.finishReason === "STOP" ? 0.9 : 0.7,
+          };
         }
       }
 
-      return {
-        text: response,
-        confidence: 0.85,
-      };
+      throw new Error("No valid response from Gemini API");
     } catch (error) {
-      console.error("Gemini API error:", error);
-      return {
-        text: "I'm sorry, I'm having trouble connecting right now. Please try again in a moment or consult with local agricultural experts for immediate assistance.",
-        confidence: 0.0,
-      };
+      console.error("Gemini API Error:", error);
+      throw new Error(
+        `Failed to get response from Gemini: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     }
   }
 
-  async analyzeImage(imageBase64: string): Promise<GeminiImageAnalysis> {
+  async analyzeImageWithText(
+    imageBase64: string,
+    prompt: string
+  ): Promise<GeminiResponse> {
     try {
-      // For demo purposes, return mock analysis
-      // In production, replace with actual Gemini Vision API call
+      if (!this.apiKey) {
+        throw new Error("Gemini API key not configured");
+      }
 
-      const mockAnalyses = [
-        {
-          detected_pest: "Aphid Infestation",
-          confidence: 0.89,
-          description:
-            "Small soft-bodied insects feeding on plant sap, commonly found on young shoots and leaves.",
-          recommendations: [
-            "Spray with insecticidal soap solution",
-            "Release beneficial insects like ladybugs",
-            "Use neem oil spray in early morning",
-            "Remove heavily infested plant parts",
-          ],
-        },
-        {
-          detected_pest: "Leaf Blight",
-          confidence: 0.92,
-          description:
-            "Fungal disease affecting leaf tissues, commonly caused by high humidity and poor air circulation.",
-          recommendations: [
-            "Apply copper-based fungicide immediately",
-            "Remove and destroy infected leaves",
-            "Improve air circulation around plants",
-            "Avoid overhead watering",
-          ],
-        },
-        {
-          detected_pest: "Stem Rust",
-          confidence: 0.87,
-          description:
-            "Serious fungal disease affecting stems that can cause significant yield loss.",
-          recommendations: [
-            "Apply systemic fungicide within 24 hours",
-            "Remove severely infected plants",
-            "Monitor spread to neighboring plants",
-            "Use resistant crop varieties next season",
-          ],
-        },
-      ];
-
-      // Return random mock analysis for demo
-      const randomAnalysis =
-        mockAnalyses[Math.floor(Math.random() * mockAnalyses.length)];
-
-      return randomAnalysis;
-    } catch (error) {
-      console.error("Gemini Vision API error:", error);
-      return {
-        detected_pest: "Analysis Failed",
-        confidence: 0.0,
-        description:
-          "Unable to analyze the image at this time. Please ensure the image is clear and try again.",
-        recommendations: [
-          "Take a clearer photo in good lighting",
-          "Ensure the affected area is visible",
-          "Try again with a different angle",
-          "Consult local agricultural experts if problem persists",
+      const requestBody = {
+        contents: [
+          {
+            parts: [
+              {
+                text: prompt,
+              },
+              {
+                inline_data: {
+                  mime_type: "image/jpeg",
+                  data: imageBase64,
+                },
+              },
+            ],
+          },
         ],
+        generationConfig: {
+          temperature: 0.4,
+          topK: 32,
+          topP: 1,
+          maxOutputTokens: 4096,
+        },
       };
+
+      const response = await fetch(`${this.baseUrl}?key=${this.apiKey}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error("Gemini Vision API Error:", errorData);
+        throw new Error(`Gemini Vision API request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.candidates && data.candidates.length > 0) {
+        const candidate = data.candidates[0];
+        if (
+          candidate.content &&
+          candidate.content.parts &&
+          candidate.content.parts.length > 0
+        ) {
+          return {
+            text: candidate.content.parts[0].text,
+            confidence: candidate.finishReason === "STOP" ? 0.9 : 0.7,
+          };
+        }
+      }
+
+      throw new Error("No valid response from Gemini Vision API");
+    } catch (error) {
+      console.error("Gemini Vision API Error:", error);
+      throw new Error(
+        `Failed to analyze image: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     }
   }
 
-  async generateSoilRecommendations(soilData: {
-    ph: number;
-    organicMatter: number;
-    nitrogen: number;
-    phosphorus: number;
-    potassium: number;
-  }): Promise<any[]> {
+  async analyzePestImage(imageBase64: string): Promise<GeminiImageAnalysis> {
     try {
-      // Mock soil analysis and recommendations
-      const recommendations = [];
+      const prompt = `
+Analyze this agricultural image for pest or disease identification:
 
-      // pH analysis
-      if (soilData.ph < 6.0) {
-        recommendations.push({
-          type: "pH Adjustment",
-          product: "Lime",
-          amount: "2-3 kg per 100 sq meters",
-          reason: "Soil is too acidic. Lime will help neutralize acidity.",
-          applicationMethod: "Spread evenly and work into top 6 inches of soil",
-        });
-      } else if (soilData.ph > 8.0) {
-        recommendations.push({
-          type: "pH Adjustment",
-          product: "Sulfur",
-          amount: "1-2 kg per 100 sq meters",
-          reason: "Soil is too alkaline. Sulfur will help lower pH.",
-          applicationMethod: "Apply before planting and water thoroughly",
-        });
-      }
+Please provide:
+1. Identify any pests, diseases, or plant health issues visible in the image
+2. Assess the severity level (low, medium, high)
+3. Provide specific treatment recommendations
+4. Suggest prevention measures
+5. Mention timing for treatment application
 
-      // Nitrogen analysis
-      if (soilData.nitrogen < 50) {
-        recommendations.push({
-          type: "Nitrogen Fertilizer",
-          product: "Urea",
-          amount: "40-50 kg per hectare",
-          reason:
-            "Low nitrogen levels detected. Nitrogen is essential for vegetative growth.",
-          applicationMethod:
-            "Apply in split doses - 50% at sowing, 50% during vegetative growth",
-        });
-      }
+Format your response as a structured analysis that a farmer can easily understand and act upon.
+`;
 
-      // Phosphorus analysis
-      if (soilData.phosphorus < 30) {
-        recommendations.push({
-          type: "Phosphorus Fertilizer",
-          product: "Superphosphate",
-          amount: "25-30 kg per hectare",
-          reason:
-            "Phosphorus deficiency affects root development and flowering.",
-          applicationMethod: "Mix with soil during land preparation",
-        });
-      }
+      const response = await this.analyzeImageWithText(imageBase64, prompt);
 
-      // Potassium analysis
-      if (soilData.potassium < 25) {
-        recommendations.push({
-          type: "Potassium Fertilizer",
-          product: "Potassium Chloride",
-          amount: "20-25 kg per hectare",
-          reason: "Low potassium affects fruit quality and disease resistance.",
-          applicationMethod: "Apply in split doses during sowing and flowering",
-        });
-      }
+      // Parse the response to extract structured data
+      const text = response.text;
 
-      // Organic matter analysis
-      if (soilData.organicMatter < 3.0) {
-        recommendations.push({
-          type: "Organic Matter",
-          product: "Compost",
-          amount: "500-1000 kg per hectare",
-          reason:
-            "Low organic matter affects soil structure and nutrient retention.",
-          applicationMethod: "Apply before planting and incorporate into soil",
-        });
-      }
-
-      return recommendations;
+      return {
+        detected_pest: this.extractPestName(text),
+        confidence: response.confidence || 0.8,
+        description: text,
+        recommendations: this.extractRecommendations(text),
+      };
     } catch (error) {
-      console.error("Soil analysis error:", error);
-      return [];
+      console.error("Pest analysis error:", error);
+      throw error;
     }
+  }
+
+  private extractPestName(text: string): string {
+    // Simple extraction logic - could be improved with regex or NLP
+    const lines = text.toLowerCase().split("\n");
+    for (const line of lines) {
+      if (
+        line.includes("pest") ||
+        line.includes("disease") ||
+        line.includes("identified")
+      ) {
+        return line.trim();
+      }
+    }
+    return "Analysis completed";
+  }
+
+  private extractRecommendations(text: string): string[] {
+    // Extract bullet points or numbered recommendations
+    const recommendations: string[] = [];
+    const lines = text.split("\n");
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (
+        trimmed.match(/^[\d\-\*\+]/) ||
+        trimmed.toLowerCase().includes("recommend")
+      ) {
+        recommendations.push(trimmed);
+      }
+    }
+
+    return recommendations.length > 0 ? recommendations : [text];
+  }
+
+  // Get agricultural advice based on location and crop
+  async getAgriculturalAdvice(
+    cropType: string,
+    location: string,
+    issue: string
+  ): Promise<GeminiResponse> {
+    const prompt = `
+As an agricultural expert, provide advice for a farmer with the following details:
+
+Crop: ${cropType}
+Location: ${location}
+Issue/Question: ${issue}
+
+Please provide:
+1. Specific advice for this crop and location
+2. Actionable steps the farmer can take
+3. Cost-effective solutions
+4. Timing recommendations
+5. Warning signs to watch for
+
+Keep the advice practical and easy to understand for farmers with basic education.
+`;
+
+    return await this.generateTextResponse(prompt);
+  }
+
+  // Get weather-based farming advice
+  async getWeatherBasedAdvice(
+    weatherCondition: string,
+    cropStage: string,
+    location: string
+  ): Promise<GeminiResponse> {
+    const prompt = `
+Provide weather-based agricultural advice:
+
+Current Weather: ${weatherCondition}
+Crop Growth Stage: ${cropStage}
+Location: ${location}
+
+Please advise on:
+1. Immediate actions needed due to current weather
+2. Crop protection measures
+3. Irrigation adjustments
+4. Harvesting considerations if applicable
+5. Preparation for upcoming weather changes
+
+Focus on practical, immediate actions the farmer should take.
+`;
+
+    return await this.generateTextResponse(prompt);
   }
 }
 
