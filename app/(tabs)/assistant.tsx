@@ -88,7 +88,7 @@ const Assistant = () => {
   const addWelcomeMessage = () => {
     const welcomeMessages = {
       "en-US":
-        "Hello! I'm your AgriAssist voice assistant. I can help you with farming questions in English, Hindi, Punjabi, or Bengali. Ask me anything about crops, pests, fertilizers, or farming techniques.",
+        "Hello! I'm your Kisan Setu voice assistant. I can help you with farming questions in English, Hindi, Punjabi, or Bengali. Ask me anything about crops, pests, fertilizers, or farming techniques.",
       "hi-IN":
         "नमस्ते! मैं आपका कृषि सहायक हूं। मैं खेती के बारे में आपके सवालों का जवाब हिंदी, अंग्रेजी, पंजाबी या बंगाली में दे सकता हूं। फसल, कीट, उर्वरक या खेती की तकनीक के बारे में कुछ भी पूछें।",
       "pa-IN":

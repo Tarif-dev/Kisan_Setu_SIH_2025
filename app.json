@@ -1,17 +1,17 @@
 {
   "expo": {
-    "name": "AgriAssist",
-    "slug": "agri-assist",
+    "name": "Kisan Setu",
+    "slug": "kisan-setu",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "agriassist",
+    "scheme": "kisansetu",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "description": "Your intelligent farming companion for better crop management, weather insights, and agricultural guidance.",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.sih2025.agriassist"
+      "bundleIdentifier": "com.sih2025.kisansetu"
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +19,7 @@
         "backgroundColor": "#1F2937"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.sih2025.agriassist",
+      "package": "com.sih2025.kisansetu",
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO",

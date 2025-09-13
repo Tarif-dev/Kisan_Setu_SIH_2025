@@ -90,7 +90,7 @@ class NotificationService {
       // Get push token for remote notifications
       if (Platform.OS === "android") {
         await Notifications.setNotificationChannelAsync("default", {
-          name: "AgriAssist Notifications",
+          name: "Kisan Setu Notifications",
           importance: Notifications.AndroidImportance.MAX,
           vibrationPattern: [0, 250, 250, 250],
           lightColor: "#22C55E",

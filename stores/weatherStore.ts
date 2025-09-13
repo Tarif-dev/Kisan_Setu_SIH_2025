@@ -9,6 +9,9 @@ interface WeatherData {
   windSpeed: number;
   visibility: number;
   icon: string;
+  pressure: number;
+  feelsLike: number;
+  uvIndex: number;
 }
 
 interface WeatherStore {
@@ -75,6 +78,9 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
           windSpeed: 12,
           visibility: 10,
           icon: "partly-sunny",
+          pressure: 1013,
+          feelsLike: 30,
+          uvIndex: 7,
         },
         isLoading: false,
         error:

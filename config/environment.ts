@@ -5,7 +5,7 @@ export const config = {
   GOOGLE_WEATHER_API_KEY: process.env.EXPO_PUBLIC_GOOGLE_WEATHER_API_KEY || "",
 
   // App Configuration
-  APP_NAME: process.env.EXPO_PUBLIC_APP_NAME || "AgriAssist",
+  APP_NAME: process.env.EXPO_PUBLIC_APP_NAME || "Kisan Setu",
   APP_VERSION: process.env.EXPO_PUBLIC_APP_VERSION || "1.0.0",
   ENVIRONMENT: process.env.EXPO_PUBLIC_ENVIRONMENT || "development",
 

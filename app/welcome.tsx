@@ -29,7 +29,7 @@ const WelcomeScreen = () => {
           Welcome to
         </Text>
         <Text className="text-white text-3xl font-bold text-center mb-8">
-          AgriAssist
+          Kisan Setu
         </Text>
 
         {/* Subtitle */}
