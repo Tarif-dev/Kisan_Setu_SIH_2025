@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   RefreshControl,
@@ -19,7 +20,7 @@ interface CropPrice {
   icon: string;
 }
 
-const Market = () => {
+const MarketPrices = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const [crops, setCrops] = useState<CropPrice[]>([
@@ -48,46 +49,72 @@ const Market = () => {
       change: 0.21,
       changePercent: 2.1,
       unit: "per bushel",
-      icon: "flower",
+      icon: "restaurant",
     },
     {
       id: "4",
       name: "Soybeans",
-      price: 12.0,
-      change: 0.0,
-      changePercent: 0.0,
+      price: 13.89,
+      change: -0.15,
+      changePercent: -1.1,
       unit: "per bushel",
-      icon: "leaf",
+      icon: "flower",
     },
     {
       id: "5",
       name: "Cotton",
-      price: 0.76,
-      change: -0.05,
-      changePercent: -0.6,
-      unit: "per lb",
-      icon: "cloud",
+      price: 0.68,
+      change: 0.03,
+      changePercent: 4.6,
+      unit: "per pound",
+      icon: "flower-outline",
+    },
+    {
+      id: "6",
+      name: "Tomatoes",
+      price: 25.5,
+      change: 1.2,
+      changePercent: 4.9,
+      unit: "per kg",
+      icon: "leaf-outline",
+    },
+    {
+      id: "7",
+      name: "Potatoes",
+      price: 18.75,
+      change: -0.85,
+      changePercent: -4.3,
+      unit: "per kg",
+      icon: "nutrition-outline",
+    },
+    {
+      id: "8",
+      name: "Onions",
+      price: 22.3,
+      change: 0.45,
+      changePercent: 2.1,
+      unit: "per kg",
+      icon: "ellipse",
     },
   ]);
 
-  const trendingCrops = ["Rice", "Wheat", "Corn", "Soybeans"];
-
-  const onRefresh = async () => {
+  const onRefresh = () => {
     setRefreshing(true);
+
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setTimeout(() => {
+      // Update prices with random changes
+      setCrops((prevCrops) =>
+        prevCrops.map((crop) => ({
+          ...crop,
+          price: crop.price + (Math.random() - 0.5) * 0.5,
+          change: (Math.random() - 0.5) * 0.3,
+          changePercent: (Math.random() - 0.5) * 3,
+        }))
+      );
 
-    // Update prices with random changes
-    setCrops((prevCrops) =>
-      prevCrops.map((crop) => ({
-        ...crop,
-        price: crop.price + (Math.random() - 0.5) * 0.5,
-        change: (Math.random() - 0.5) * 0.3,
-        changePercent: (Math.random() - 0.5) * 3,
-      }))
-    );
-
-    setRefreshing(false);
+      setRefreshing(false);
+    }, 1000);
   };
 
   const filteredCrops = crops.filter((crop) =>
@@ -138,7 +165,10 @@ const Market = () => {
       {/* Header */}
       <View className="pt-12 pb-6 px-4 bg-gray-800">
         <View className="flex-row items-center justify-between">
-          <View>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Ionicons name="chevron-back" size={24} color="white" />
+          </TouchableOpacity>
+          <View className="flex-1 ml-4">
             <Text className="text-2xl font-bold text-white">Market Prices</Text>
             <Text className="text-gray-400 mt-1">
               Real-time crop market prices
@@ -147,6 +177,35 @@ const Market = () => {
           <TouchableOpacity onPress={onRefresh}>
             <Ionicons name="refresh" size={24} color="#22C55E" />
           </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Market Summary */}
+      <View className="mx-4 mb-4">
+        <View className="bg-gray-800 rounded-2xl p-4 border border-gray-700">
+          <Text className="text-white font-semibold text-lg mb-3">
+            Market Summary
+          </Text>
+          <View className="flex-row justify-between">
+            <View className="flex-1">
+              <Text className="text-gray-400 text-sm">Gainers</Text>
+              <Text className="text-green-400 font-bold text-xl">
+                {filteredCrops.filter((crop) => crop.change > 0).length}
+              </Text>
+            </View>
+            <View className="flex-1">
+              <Text className="text-gray-400 text-sm">Losers</Text>
+              <Text className="text-red-400 font-bold text-xl">
+                {filteredCrops.filter((crop) => crop.change < 0).length}
+              </Text>
+            </View>
+            <View className="flex-1">
+              <Text className="text-gray-400 text-sm">Unchanged</Text>
+              <Text className="text-gray-400 font-bold text-xl">
+                {filteredCrops.filter((crop) => crop.change === 0).length}
+              </Text>
+            </View>
+          </View>
         </View>
       </View>
 
@@ -167,77 +226,32 @@ const Market = () => {
       <ScrollView
         className="flex-1 px-4"
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#22C55E"
+          />
         }
+        showsVerticalScrollIndicator={false}
       >
-        {/* Trending Crops */}
-        <View className="mb-6">
-          <Text className="text-white font-semibold text-lg mb-4">
-            Trending Crops
-          </Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {trendingCrops.map((cropName, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => setSearchQuery(cropName)}
-                className="bg-green-500 rounded-full px-4 py-2 mr-3"
-              >
-                <Text className="text-white font-medium">{cropName}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
+        {filteredCrops.map((crop) => (
+          <PriceCard key={crop.id} crop={crop} />
+        ))}
 
-        {/* Market Prices List */}
-        <View className="mb-8">
-          {filteredCrops.map((crop) => (
-            <PriceCard key={crop.id} crop={crop} />
-          ))}
-
-          {filteredCrops.length === 0 && (
-            <View className="items-center py-8">
-              <Ionicons name="search" size={48} color="#6B7280" />
-              <Text className="text-gray-400 text-lg mt-4">
-                No crops found for "{searchQuery}"
-              </Text>
-            </View>
-          )}
-        </View>
-
-        {/* Market Analysis */}
-        <View className="bg-gray-800 rounded-2xl p-6 mb-8 border border-gray-700">
-          <View className="flex-row items-center mb-4">
-            <Ionicons name="analytics" size={20} color="#22C55E" />
-            <Text className="text-lg font-semibold text-white ml-2">
-              Market Analysis
+        {filteredCrops.length === 0 && (
+          <View className="items-center justify-center py-8">
+            <Ionicons name="search" size={48} color="#6B7280" />
+            <Text className="text-gray-400 text-lg mt-4">No crops found</Text>
+            <Text className="text-gray-500 text-sm mt-2">
+              Try adjusting your search term
             </Text>
           </View>
+        )}
 
-          <View className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 mb-4">
-            <Text className="text-blue-400 font-medium mb-2">
-              Today's Market Trends
-            </Text>
-            <Text className="text-gray-300 text-sm">
-              • Rice and Corn showing positive growth due to increased demand
-              {"\n"}• Wheat prices slightly down due to seasonal harvest{"\n"}•
-              Cotton facing pressure from international markets{"\n"}• Soybeans
-              remain stable with steady demand
-            </Text>
-          </View>
-
-          <View className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4">
-            <Text className="text-yellow-400 font-medium mb-2">
-              Price Alert
-            </Text>
-            <Text className="text-gray-300 text-sm">
-              Corn prices have increased by 2.1% today. Consider selling if you
-              have inventory ready.
-            </Text>
-          </View>
-        </View>
+        <View className="h-20" />
       </ScrollView>
     </View>
   );
 };
 
-export default Market;
+export default MarketPrices;

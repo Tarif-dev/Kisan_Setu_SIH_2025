@@ -62,7 +62,7 @@ const Home = () => {
       title: "Market Prices",
       icon: "trending-up",
       description: "Check crop prices",
-      route: "/(tabs)/market",
+      route: "/market-prices",
       color: "#3B82F6",
     },
   ];
