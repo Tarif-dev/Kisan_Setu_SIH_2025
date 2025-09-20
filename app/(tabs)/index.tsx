@@ -3,39 +3,40 @@ import { useWeatherStore } from "@/stores/weatherStore";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
-  Alert,
-  RefreshControl,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
+    Alert,
+    RefreshControl,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 const Home = () => {
+  const { t } = useTranslation();
   const [refreshing, setRefreshing] = useState(false);
   const {
     weather,
-    isLoading: weatherLoading,
     fetchWeather,
   } = useWeatherStore();
   const { location, getCurrentLocation } = useLocationStore();
 
-  useEffect(() => {
-    loadInitialData();
-  }, []);
-
-  const loadInitialData = async () => {
+  const loadInitialData = React.useCallback(async () => {
     try {
       await getCurrentLocation();
       await fetchWeather();
-    } catch (error) {
+    } catch {
       Alert.alert(
-        "Error",
-        "Failed to load data. Please check your connection."
+        t('common.error'),
+        t('common.errorMessage')
       );
     }
-  };
+  }, [getCurrentLocation, fetchWeather, t]);
+
+  useEffect(() => {
+    loadInitialData();
+  }, [loadInitialData]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -45,23 +46,23 @@ const Home = () => {
 
   const quickAccessItems = [
     {
-      title: "Soil Health",
+      title: t('soilHealth.title'),
       icon: "leaf",
-      description: "Test your soil",
+      description: t('soilHealth.analyzeButton'),
       route: "/soil-health",
       color: "#22C55E",
     },
     {
-      title: "Pest Detection",
+      title: t('pestDetection.title'),
       icon: "camera",
-      description: "Scan crop diseases",
+      description: t('pestDetection.uploadImage'),
       route: "/pest-detection",
       color: "#EF4444",
     },
     {
-      title: "Market Prices",
+      title: t('marketPrices.title'),
       icon: "trending-up",
-      description: "Check crop prices",
+      description: t('marketPrices.searchPlaceholder'),
       route: "/market-prices",
       color: "#3B82F6",
     },
@@ -80,9 +81,9 @@ const Home = () => {
           <TouchableOpacity>
             <Ionicons name="menu" size={24} color="white" />
           </TouchableOpacity>
-          <Text className="text-xl font-bold text-white">Kisan Setu</Text>
+          <Text className="text-xl font-bold text-white">{t('welcome.title')}</Text>
           <TouchableOpacity
-            onPress={() => Alert.alert("Notifications", "No new notifications")}
+            onPress={() => Alert.alert(t('common.notifications'), t('common.noNotifications'))}
           >
             <Ionicons name="notifications" size={24} color="white" />
           </TouchableOpacity>
@@ -94,7 +95,7 @@ const Home = () => {
           <Text className="text-gray-400 ml-2 text-sm">
             {location
               ? `${location.city || ""}, ${location.region || location.country || ""}`
-              : "Fetching location..."}
+              : t('common.fetchingLocation')}
           </Text>
         </View>
 
@@ -102,14 +103,14 @@ const Home = () => {
         <View className="bg-gray-800 rounded-xl flex-row items-center px-4 py-3">
           <Ionicons name="search" size={20} color="#9CA3AF" />
           <Text className="text-gray-400 ml-3 flex-1">
-            Search for crops, diseases...
+            {t('common.searchPlaceholder')}
           </Text>
         </View>
       </View>
 
       {/* Quick Access */}
       <View className="mx-4 mb-6">
-        <Text className="text-xl font-bold text-white mb-4">Quick Access</Text>
+        <Text className="text-xl font-bold text-white mb-4">{t('common.quickAccess')}</Text>
         <View className="flex-row justify-between">
           {quickAccessItems.map((item, index) => (
             <TouchableOpacity
@@ -133,11 +134,11 @@ const Home = () => {
 
       {/* Comprehensive Weather */}
       <View className="mx-4 mb-6">
-        <Text className="text-xl font-bold text-white mb-4">Weather</Text>
+        <Text className="text-xl font-bold text-white mb-4">{t('common.weather')}</Text>
 
         {/* Current Conditions - Enhanced */}
         <View className="bg-gray-800 rounded-2xl p-6 border border-gray-700 mb-4">
-          <Text className="text-gray-400 text-sm mb-4">Current Conditions</Text>
+          <Text className="text-gray-400 text-sm mb-4">{t('weather.currentConditions')}</Text>
 
           {/* Main Temperature and Description */}
           <View className="flex-row items-center justify-between mb-6">
@@ -146,10 +147,10 @@ const Home = () => {
                 {weather ? Math.round(weather.temperature) : 28}°C
               </Text>
               <Text className="text-gray-400 capitalize text-base">
-                {weather ? weather.description : "Partly Cloudy"}
+                {weather ? weather.description : t('weather.partlyCloudy')}
               </Text>
               <Text className="text-gray-500 text-sm mt-1">
-                Feels like{" "}
+                {t('weather.feelsLike')}{" "}
                 {weather
                   ? Math.round(weather.feelsLike || weather.temperature)
                   : 30}
@@ -163,28 +164,28 @@ const Home = () => {
           <View className="flex-row justify-between">
             <View className="items-center flex-1">
               <Ionicons name="water" size={20} color="#60A5FA" />
-              <Text className="text-gray-400 text-xs mt-1">Humidity</Text>
+              <Text className="text-gray-400 text-xs mt-1">{t('weather.humidity')}</Text>
               <Text className="text-white font-semibold">
                 {weather ? weather.humidity : 65}%
               </Text>
             </View>
             <View className="items-center flex-1">
               <Ionicons name="eye" size={20} color="#34D399" />
-              <Text className="text-gray-400 text-xs mt-1">Visibility</Text>
+              <Text className="text-gray-400 text-xs mt-1">{t('weather.visibility')}</Text>
               <Text className="text-white font-semibold">
                 {weather ? weather.visibility : 10} km
               </Text>
             </View>
             <View className="items-center flex-1">
               <Ionicons name="speedometer" size={20} color="#A78BFA" />
-              <Text className="text-gray-400 text-xs mt-1">Wind</Text>
+              <Text className="text-gray-400 text-xs mt-1">{t('weather.wind')}</Text>
               <Text className="text-white font-semibold">
                 {weather ? weather.windSpeed : 8} km/h
               </Text>
             </View>
             <View className="items-center flex-1">
               <Ionicons name="thermometer" size={20} color="#F87171" />
-              <Text className="text-gray-400 text-xs mt-1">Pressure</Text>
+              <Text className="text-gray-400 text-xs mt-1">{t('weather.pressure')}</Text>
               <Text className="text-white font-semibold">
                 {weather ? Math.round(weather.pressure || 1013) : 1013} mb
               </Text>
@@ -197,9 +198,9 @@ const Home = () => {
           <View className="flex-row items-center">
             <Ionicons name="water" size={20} color="#60A5FA" />
             <View className="ml-3 flex-1">
-              <Text className="text-blue-400 font-medium">Weather Alert</Text>
+              <Text className="text-blue-400 font-medium">{t('weather.alert')}</Text>
               <Text className="text-gray-300 text-sm mt-1">
-                Heavy rainfall expected tomorrow. Prepare for waterlogging.
+                {t('weather.alertMessage')}
               </Text>
             </View>
           </View>
@@ -207,7 +208,7 @@ const Home = () => {
 
         {/* 7-Day Forecast */}
         <View className="bg-gray-800 rounded-2xl p-4 border border-gray-700">
-          <Text className="text-white font-semibold mb-4">7-Day Forecast</Text>
+          <Text className="text-white font-semibold mb-4">{t('weather.forecast')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {[
               {

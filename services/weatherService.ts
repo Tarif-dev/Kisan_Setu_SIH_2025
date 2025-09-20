@@ -1,5 +1,6 @@
 // Weather Service using Google API for agricultural weather data
 import config from "../config/environment";
+import { translateWeatherCondition } from "../utils/translationUtils";
 
 interface WeatherData {
   temperature: number;
@@ -84,8 +85,8 @@ class WeatherService {
       };
 
       const weatherData: WeatherData = {
-        temperature: Math.round(current.temperature),
-        description: getWeatherDescription(current.weathercode),
+        temperature: current.temperature,
+        description: translateWeatherCondition(getWeatherDescription(current.weathercode)),
         humidity: hourly.relative_humidity_2m[0] || 60,
         windSpeed: Math.round(current.windspeed),
         visibility: hourly.visibility
@@ -98,7 +99,7 @@ class WeatherService {
               ? "cloudy"
               : "rainy",
         pressure: 1013,
-        feelsLike: Math.round(current.temperature),
+        feelsLike: current.temperature,
         uvIndex: 5,
       };
 
@@ -110,14 +111,14 @@ class WeatherService {
       // Fallback to mock data
       const mockWeatherData: WeatherData = {
         temperature: 28 + Math.random() * 10,
-        description: ["partly cloudy", "sunny", "overcast", "light rain"][
+        description: translateWeatherCondition(["partly cloudy", "sunny", "overcast", "light rain"][
           Math.floor(Math.random() * 4)
-        ],
+        ]),
         humidity: 60 + Math.random() * 20,
-        windSpeed: 5 + Math.random() * 15,
-        visibility: 8 + Math.random() * 7,
+        windSpeed: Math.round(5 + Math.random() * 15),
+        visibility: Math.round(8 + Math.random() * 7),
         icon: "partly-sunny",
-        pressure: 1010 + Math.random() * 20,
+        pressure: Math.round(1010 + Math.random() * 20),
         feelsLike: 30 + Math.random() * 8,
         uvIndex: Math.floor(Math.random() * 11),
       };
@@ -161,14 +162,14 @@ class WeatherService {
         (date: string, index: number) => ({
           date,
           temperature: {
-            min: Math.round(daily.temperature_2m_min[index]),
-            max: Math.round(daily.temperature_2m_max[index]),
+            min: daily.temperature_2m_min[index],
+            max: daily.temperature_2m_max[index],
           },
-          description: getWeatherDescription(daily.weather_code[index]),
+          description: translateWeatherCondition(getWeatherDescription(daily.weather_code[index])),
           icon: daily.weather_code[index] < 3 ? "sunny" : "cloudy",
-          humidity: Math.round(daily.relative_humidity_2m_mean[index]),
+          humidity: daily.relative_humidity_2m_mean[index],
           windSpeed: Math.round(daily.wind_speed_10m_max[index]),
-          precipitation: daily.precipitation_sum[index],
+          precipitation: Math.round(daily.precipitation_sum[index]),
         })
       );
 
@@ -187,11 +188,11 @@ class WeatherService {
             min: 18 + Math.random() * 8,
             max: 28 + Math.random() * 12,
           },
-          description: "partly cloudy",
+          description: translateWeatherCondition("partly cloudy"),
           icon: "partly-sunny",
           humidity: 50 + Math.random() * 30,
-          windSpeed: 3 + Math.random() * 12,
-          precipitation: Math.random() * 100,
+          windSpeed: Math.round(3 + Math.random() * 12),
+          precipitation: Math.round(Math.random() * 100),
         });
       }
       return forecasts;

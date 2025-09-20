@@ -1,5 +1,6 @@
 // Location Service for fetching user location and address
 import * as Location from "expo-location";
+import { translateLocation } from "../utils/translationUtils";
 
 export interface LocationData {
   latitude: number;
@@ -139,13 +140,13 @@ class LocationService {
   private formatAddress(addressInfo: Location.LocationGeocodedAddress) {
     const components = {
       street: addressInfo.streetNumber
-        ? `${addressInfo.streetNumber} ${addressInfo.street}`
-        : addressInfo.street,
-      subLocality: addressInfo.subregion,
-      city: addressInfo.city || addressInfo.district,
-      district: addressInfo.district,
-      state: addressInfo.region,
-      country: addressInfo.country,
+        ? `${addressInfo.streetNumber} ${translateLocation(addressInfo.street || '')}`
+        : translateLocation(addressInfo.street || ''),
+      subLocality: translateLocation(addressInfo.subregion || ''),
+      city: translateLocation(addressInfo.city || '') || translateLocation(addressInfo.district || ''),
+      district: translateLocation(addressInfo.district || ''),
+      state: translateLocation(addressInfo.region || ''),
+      country: translateLocation(addressInfo.country || ''),
       postalCode: addressInfo.postalCode,
     };
 

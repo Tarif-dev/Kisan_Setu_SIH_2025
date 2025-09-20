@@ -1,6 +1,27 @@
 // Soil Health Service using Gemini AI for analysis and recommendations
 import * as FileSystem from "expo-file-system";
+import i18next from '../config/i18n';
+import { translateCurrency, translateLocation } from '../utils/translationUtils';
 import { geminiService } from "./geminiService";
+
+// Translation helper functions
+const translateSoilParameter = (param: string): string => {
+  const key = `soil.parameters.${param.toLowerCase().replace(/\s+/g, '')}`;
+  const translated = i18next.t(key);
+  return translated === key ? param : translated;
+};
+
+const translateSoilRecommendation = (recommendation: string): string => {
+  const key = `soil.recommendations.${recommendation.toLowerCase().replace(/\s+/g, '')}`;
+  const translated = i18next.t(key);
+  return translated === key ? recommendation : translated;
+};
+
+const translateSoilQuality = (quality: string): string => {
+  const key = `soil.quality.${quality.toLowerCase()}`;
+  const translated = i18next.t(key);
+  return translated === key ? quality : translated;
+};
 
 export interface SoilData {
   ph?: number;
@@ -14,7 +35,7 @@ export interface SoilData {
 
 export interface CropRecommendation {
   cropName: string;
-  suitability: "High" | "Medium" | "Low";
+  suitability: string;  // Will hold translated values
   reason: string;
   expectedYield: string;
   plantingTime: string;
@@ -34,7 +55,7 @@ export interface FertilizerRecommendation {
 }
 
 export interface SoilAnalysisResult {
-  soilQuality: "Excellent" | "Good" | "Fair" | "Poor";
+  soilQuality: string;  // Will hold translated values
   soilHealthScore: number;
   deficiencies: string[];
   recommendations: string[];
@@ -249,13 +270,30 @@ Format your response clearly for easy understanding by farmers with basic educat
     const improvementPlan = this.extractImprovementPlan(responseText);
 
     return {
-      soilQuality,
+      soilQuality: translateSoilQuality(soilQuality),
       soilHealthScore,
-      deficiencies,
-      recommendations,
-      cropSuggestions,
-      fertilizerRecommendations,
-      improvementPlan,
+      deficiencies: deficiencies.map(d => translateSoilRecommendation(d)),
+      recommendations: recommendations.map(r => translateSoilRecommendation(r)),
+      cropSuggestions: cropSuggestions.map(crop => ({
+        ...crop,
+        cropName: translateSoilParameter(crop.cropName),
+        suitability: translateSoilQuality(crop.suitability),
+        reason: translateSoilRecommendation(crop.reason),
+        expectedYield: crop.expectedYield,
+        plantingTime: translateSoilParameter(crop.plantingTime),
+        harvestTime: translateSoilParameter(crop.harvestTime),
+        specialCare: crop.specialCare.map(care => translateSoilRecommendation(care))
+      })),
+      fertilizerRecommendations: fertilizerRecommendations.map(fertilizer => ({
+        ...fertilizer,
+        name: translateSoilParameter(fertilizer.name),
+        type: translateSoilParameter(fertilizer.type),
+        applicationMethod: translateSoilRecommendation(fertilizer.applicationMethod),
+        timing: translateSoilParameter(fertilizer.timing),
+        costEstimate: translateCurrency(parseInt(fertilizer.costEstimate.replace(/[^\d]/g, ''))),
+        benefits: fertilizer.benefits.map(benefit => translateSoilRecommendation(benefit))
+      })),
+      improvementPlan: improvementPlan.map(plan => translateSoilRecommendation(plan)),
     };
   }
 
@@ -325,21 +363,21 @@ Format your response clearly for easy understanding by farmers with basic educat
     const deficiencies: string[] = [];
 
     if (text.match(/nitrogen.*deficien|low.*nitrogen/i)) {
-      deficiencies.push("Nitrogen deficiency detected");
+      deficiencies.push(translateSoilRecommendation("Nitrogen deficiency detected"));
     }
     if (text.match(/phosphorus.*deficien|low.*phosphorus/i)) {
-      deficiencies.push("Phosphorus deficiency detected");
+      deficiencies.push(translateSoilRecommendation("Phosphorus deficiency detected"));
     }
     if (text.match(/potassium.*deficien|low.*potassium/i)) {
-      deficiencies.push("Potassium deficiency detected");
+      deficiencies.push(translateSoilRecommendation("Potassium deficiency detected"));
     }
     if (text.match(/organic.*matter.*low|low.*organic/i)) {
-      deficiencies.push("Low organic matter content");
+      deficiencies.push(translateSoilRecommendation("Low organic matter content"));
     }
 
     return deficiencies.length > 0
       ? deficiencies
-      : ["No major deficiencies detected"];
+      : [translateSoilRecommendation("No major deficiencies detected")];
   }
 
   // Extract general recommendations
@@ -396,6 +434,15 @@ Format your response clearly for easy understanding by farmers with basic educat
 
     const kMatch = text.match(/potassium[^0-9]*(\d+\.?\d*)/i);
     if (kMatch) soilData.potassium = parseFloat(kMatch[1]);
+
+    // Extract soil type and location
+    if (text.match(/soil\s*type[:\s]*([\w\s]+)/i)) {
+      soilData.soilType = translateSoilParameter(text.match(/soil\s*type[:\s]*([\w\s]+)/i)![1].trim());
+    }
+
+    if (text.match(/location[:\s]*([\w\s,]+)/i)) {
+      soilData.location = translateLocation(text.match(/location[:\s]*([\w\s,]+)/i)![1].trim());
+    }
 
     return soilData;
   }

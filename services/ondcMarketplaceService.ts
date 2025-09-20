@@ -2,6 +2,22 @@
 // This service handles all marketplace operations including farmer onboarding,
 // product listings, order management, and customer interactions
 
+import i18next from '../config/i18n';
+import { translateLocation } from '../utils/translationUtils';
+
+// Translation helper functions
+const translateProductCategory = (category: string): string => {
+  const key = `marketplace.categories.${category.toLowerCase().replace(/\s+/g, '')}`;
+  const translated = i18next.t(key);
+  return translated === key ? category : translated;
+};
+
+const translateProductInfo = (text: string): string => {
+  const key = `marketplace.info.${text.toLowerCase().replace(/\s+/g, '')}`;
+  const translated = i18next.t(key);
+  return translated === key ? text : translated;
+};
+
 export interface Farmer {
   id: string;
   name: string;
@@ -359,6 +375,35 @@ class ONDCMarketplaceService {
     }
   }
 
+  // Translate product information for display
+  private translateProduct(product: Product): Product {
+    return {
+      ...product,
+      name: translateProductInfo(product.name),
+      description: translateProductInfo(product.description),
+      category: translateProductCategory(product.category),
+      subcategory: translateProductCategory(product.subcategory),
+      unit: translateProductInfo(product.unit),
+      price: product.price, // Keep numeric value, format when displaying
+      specifications: {
+        ...product.specifications,
+        variety: translateProductInfo(product.specifications.variety),
+        storageConditions: translateProductInfo(product.specifications.storageConditions),
+        processingMethod: product.specifications.processingMethod 
+          ? translateProductInfo(product.specifications.processingMethod)
+          : undefined,
+      },
+      location: {
+        ...product.location,
+        pickupAddress: product.location.pickupAddress
+          .split(', ')
+          .map(part => translateLocation(part))
+          .join(', '),
+        serviceableAreas: product.location.serviceableAreas.map(area => translateLocation(area)),
+      }
+    };
+  }
+
   async getProducts(filters?: {
     category?: string;
     location?: string;
@@ -370,9 +415,9 @@ class ONDCMarketplaceService {
       // In production, this would query the database with filters
       const allProducts = await this.getAllProductsFromStorage();
 
-      if (!filters) return allProducts;
+      if (!filters) return allProducts.map(product => this.translateProduct(product));
 
-      return allProducts.filter((product) => {
+      const filteredProducts = allProducts.filter((product) => {
         if (filters.category && product.category !== filters.category)
           return false;
         if (filters.farmerId && product.farmerId !== filters.farmerId)
@@ -398,6 +443,8 @@ class ONDCMarketplaceService {
 
         return true;
       });
+
+      return filteredProducts.map(product => this.translateProduct(product));
     } catch (error) {
       console.error("Error fetching products:", error);
       return [];
@@ -547,17 +594,28 @@ class ONDCMarketplaceService {
     }
   ): Promise<Product[]> {
     try {
+      const translatedQuery = i18next.language === 'hi' 
+        ? translateProductInfo(query) 
+        : query;
+
       const products = await this.getProducts({
-        searchQuery: query,
+        searchQuery: translatedQuery,
         ...filters,
       });
 
       // Sort by relevance and farmer rating
-      return products.sort((a, b) => {
-        const aRelevance = a.name.toLowerCase().includes(query.toLowerCase())
+      const sortedProducts = products.sort((a, b) => {
+        const aName = i18next.language === 'hi' 
+          ? translateProductInfo(a.name) 
+          : a.name;
+        const bName = i18next.language === 'hi'
+          ? translateProductInfo(b.name)
+          : b.name;
+
+        const aRelevance = aName.toLowerCase().includes(translatedQuery.toLowerCase())
           ? 1
           : 0;
-        const bRelevance = b.name.toLowerCase().includes(query.toLowerCase())
+        const bRelevance = bName.toLowerCase().includes(translatedQuery.toLowerCase())
           ? 1
           : 0;
 
@@ -568,6 +626,8 @@ class ONDCMarketplaceService {
         // If same relevance, sort by farmer rating (would need to fetch farmer data)
         return 0;
       });
+
+      return sortedProducts.map(product => this.translateProduct(product));
     } catch (error) {
       console.error("Search error:", error);
       return [];

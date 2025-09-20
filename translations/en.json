@@ -1,0 +1,158 @@
+{
+  "welcome": {
+    "title": "Welcome to Kisan Setu",
+    "description": "Your Agricultural Companion"
+  },
+  "advisory": {
+    "title": "Advisory",
+    "subtitle": "Personalized farming recommendations",
+    "currentConditions": "Current Conditions",
+    "location": "Location",
+    "currentLocation": "Current Location",
+    "temperature": "Temperature",
+    "humidity": "Humidity",
+    "priority": {
+      "high": "High Priority",
+      "medium": "Medium Priority",
+      "low": "Low Priority"
+    },
+    "recommendations": "Today's Recommendations",
+    "actionItems": "Action Items",
+    "weatherAlert": {
+      "title": "Weather Alert",
+      "message": "Heavy rainfall expected tomorrow. Prepare for potential waterlogging in low-lying areas. Postpone any planned fertilizer application until after the rain."
+    },
+    "farmingTip": {
+      "title": "Farming Tip",
+      "message": "Regularly monitor your crops for early signs of pest and disease problems. Early detection and treatment can prevent major crop losses and reduce treatment costs."
+    },
+    "advisories": {
+      "wheatDisease": {
+        "title": "Wheat Disease Warning",
+        "description": "High risk of fungal diseases due to recent rainfall and humid conditions.",
+        "actions": [
+          "Apply fungicide within 48 hours",
+          "Inspect crops daily for early symptoms",
+          "Ensure proper field drainage",
+          "Remove infected plant debris"
+        ]
+      },
+      "irrigation": {
+        "title": "Optimal Irrigation Time",
+        "description": "Current soil moisture levels suggest irrigation is needed for better crop yield.",
+        "actions": [
+          "Irrigate during early morning hours",
+          "Check soil moisture at 6-inch depth",
+          "Apply 2-3 inches of water per session",
+          "Monitor weather forecast before irrigation"
+        ]
+      },
+      "harvest": {
+        "title": "Harvest Recommendation",
+        "description": "Rice crops in your area are ready for harvest based on maturity indicators.",
+        "actions": [
+          "Begin harvest within next 5-7 days",
+          "Check grain moisture content",
+          "Prepare storage facilities",
+          "Arrange transportation for harvested crops"
+        ]
+      },
+      "fertilizer": {
+        "title": "Fertilizer Application",
+        "description": "Second dose of fertilizer application is due for corn crops.",
+        "actions": [
+          "Apply NPK fertilizer in 4:2:1 ratio",
+          "Water thoroughly after application",
+          "Apply during cooler parts of the day",
+          "Monitor crop response after 7 days"
+        ]
+      }
+    }
+  },
+  "tabs": {
+    "home": "Home",
+    "advisory": "Advisory",
+    "assistant": "Assistant",
+    "marketplace": "Marketplace",
+    "settings": "Settings"
+  },
+  "settings": {
+    "language": "Language",
+    "selectLanguage": "Select Language",
+    "english": "English",
+    "hindi": "Hindi"
+  },
+  "onboarding": {
+    "title": "Farmer Onboarding",
+    "startButton": "Get Started"
+  },
+  "marketPrices": {
+    "title": "Market Prices",
+    "searchPlaceholder": "Search for crops",
+    "currency": {
+      "symbol": "$"
+    }
+  },
+  "pestDetection": {
+    "title": "Pest Detection",
+    "uploadImage": "Upload Image",
+    "takePhoto": "Take Photo"
+  },
+  "soilHealth": {
+    "title": "Soil Health",
+    "analyzeButton": "Analyze Soil"
+  },
+  "assistant": {
+    "title": "Voice Assistant",
+    "placeholder": "Type your farming question...",
+    "listening": "Listening... Tap to stop",
+    "processing": "Processing your request...",
+    "speaking": "Speaking response...",
+    "defaultPrompt": "Tap microphone to speak or type your question",
+    "microphoneAccess": {
+      "title": "Microphone Access Required",
+      "message": "Please allow microphone access to use voice features."
+    },
+    "languageChanged": "Language changed to",
+    "welcomeMessage": "Hello! I'm your Kisan Setu voice assistant. I can help you with farming questions in English, Hindi, Punjabi, or Bengali. Ask me anything about crops, pests, fertilizers, or farming techniques."
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "errorMessage": "Failed to load data. Please check your connection.",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "save": "Save",
+    "submit": "Submit",
+    "notifications": "Notifications",
+    "noNotifications": "No new notifications",
+    "fetchingLocation": "Fetching location...",
+    "searchPlaceholder": "Search for crops, diseases...",
+    "quickAccess": "Quick Access",
+    "weather": "Weather",
+    "preferences": "Preferences",
+    "location": "Location",
+    "currentLocation": "Current location",
+    "voiceSupport": "Voice Support",
+    "feedback": "Feedback",
+    "reportIssue": "Report an Issue",
+    "contactSupport": "Contact support",
+    "provideFeedback": "Provide Feedback",
+    "sendFeedback": "Send us your feedback",
+    "on": "On",
+    "off": "Off",
+    "accessibility": "Accessibility"
+  },
+  "weather": {
+    "currentConditions": "Current Conditions",
+    "partlyCloudy": "Partly Cloudy",
+    "feelsLike": "Feels like",
+    "humidity": "Humidity",
+    "visibility": "Visibility",
+    "wind": "Wind",
+    "pressure": "Pressure",
+    "alert": "Weather Alert",
+    "alertMessage": "Heavy rainfall expected tomorrow. Prepare for waterlogging.",
+    "forecast": "7-Day Forecast"
+  }
+}

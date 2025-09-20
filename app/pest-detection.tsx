@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
@@ -17,6 +18,7 @@ import {
 } from "../services/pestDetectionService";
 
 const PestDetection = () => {
+  const { t } = useTranslation();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] =
@@ -31,8 +33,8 @@ const PestDetection = () => {
 
       if (!permissionResult.granted) {
         Alert.alert(
-          "Permission Required",
-          `Camera/Gallery access is required to ${useCamera ? "take photos" : "select images"}.`
+          t('pestDetection.permissions.title'),
+          t(useCamera ? 'pestDetection.permissions.camera' : 'pestDetection.permissions.gallery')
         );
         return;
       }
@@ -54,8 +56,9 @@ const PestDetection = () => {
       if (!result.canceled && result.assets[0]) {
         setSelectedImage(result.assets[0].uri);
       }
-    } catch (error) {
-      Alert.alert("Error", "Failed to pick image. Please try again.");
+    } catch (err: unknown) {
+      console.error(err);
+      Alert.alert("Error", t('pestDetection.errors.pickImage'));
     }
   };
 
@@ -67,7 +70,8 @@ const PestDetection = () => {
       const result =
         await pestDetectionService.analyzePlantImage(selectedImage);
       setAnalysisResult(result);
-    } catch (error) {
+    } catch (err: unknown) {
+      console.error(err);
       Alert.alert(
         "Analysis Failed",
         "Failed to analyze the image. Please try again."
@@ -137,7 +141,7 @@ const PestDetection = () => {
               <Ionicons name="chevron-back" size={24} color="white" />
             </TouchableOpacity>
             <Text className="text-xl font-bold text-white ml-4">
-              Pest & Disease Detection
+              {t('pestDetection.title')}
             </Text>
           </View>
 
@@ -170,8 +174,7 @@ const PestDetection = () => {
       {/* Upload Section */}
       <View className="mx-4 mb-6">
         <Text className="text-gray-300 text-base mb-4 leading-6">
-          Upload an image of the affected crop to identify potential pests or
-          diseases and receive expert recommendations.
+          {t('pestDetection.description')}
         </Text>
 
         <View className="bg-gray-800 rounded-2xl p-6 border border-gray-700">
@@ -192,10 +195,10 @@ const PestDetection = () => {
                   <Ionicons name="camera" size={28} color="#9CA3AF" />
                 </View>
                 <Text className="text-white font-medium text-lg mb-2">
-                  Select Plant Image
+                  {t('pestDetection.selectImage.title')}
                 </Text>
                 <Text className="text-gray-400 text-sm text-center">
-                  Take a clear photo of the affected plant
+                  {t('pestDetection.selectImage.subtitle')}
                 </Text>
               </View>
             )}
@@ -208,7 +211,7 @@ const PestDetection = () => {
               className="flex-1 bg-blue-500 rounded-xl py-3 px-4 flex-row items-center justify-center"
             >
               <Ionicons name="camera" size={18} color="white" />
-              <Text className="text-white font-medium ml-2">Camera</Text>
+              <Text className="text-white font-medium ml-2">{t('pestDetection.buttons.camera')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -216,7 +219,7 @@ const PestDetection = () => {
               className="flex-1 bg-gray-700 rounded-xl py-3 px-4 flex-row items-center justify-center"
             >
               <Ionicons name="images" size={18} color="white" />
-              <Text className="text-white font-medium ml-2">Gallery</Text>
+              <Text className="text-white font-medium ml-2">{t('pestDetection.buttons.gallery')}</Text>
             </TouchableOpacity>
           </View>
 
@@ -232,14 +235,14 @@ const PestDetection = () => {
                 <>
                   <ActivityIndicator size="small" color="white" />
                   <Text className="text-white font-semibold ml-2 text-lg">
-                    Analyzing with AI...
+                    {t('pestDetection.buttons.analyzing')}
                   </Text>
                 </>
               ) : (
                 <>
                   <Ionicons name="scan" size={20} color="white" />
                   <Text className="text-white font-semibold ml-2 text-lg">
-                    Analyze with Gemini AI
+                    {t('pestDetection.buttons.analyze')}
                   </Text>
                 </>
               )}
@@ -462,11 +465,11 @@ const PestDetection = () => {
                             }`}
                           >
                             {treatment.type === "Organic"
-                              ? "जैविक (Organic)"
+                              ? t('pestDetection.treatmentTypes.organic')
                               : treatment.type === "Chemical"
-                                ? "रासायनिक (Chemical)"
+                                ? t('pestDetection.treatmentTypes.chemical')
                                 : treatment.type === "Biological"
-                                  ? "जैविक नियंत्रण (Biological)"
+                                  ? t('pestDetection.treatmentTypes.biological')
                                   : treatment.type}
                           </Text>
                         </View>
@@ -475,7 +478,7 @@ const PestDetection = () => {
                       <View className="flex-row justify-between">
                         <View className="flex-1 mr-3">
                           <Text className="text-gray-400 text-xs mb-1">
-                            प्रभावशीलता (Effectiveness)
+                            {t('pestDetection.results.effectiveness')}
                           </Text>
                           <View className="flex-row items-center">
                             <View className="flex-1 bg-gray-600 rounded-full h-2 mr-2">
@@ -491,7 +494,7 @@ const PestDetection = () => {
                         </View>
                         <View className="flex-1 ml-3">
                           <Text className="text-gray-400 text-xs mb-1">
-                            उपयोग विधि (Application)
+                            {t('pestDetection.results.application')}
                           </Text>
                           <Text className="text-white text-sm">
                             {treatment.applicationMethod}
@@ -510,7 +513,7 @@ const PestDetection = () => {
       {!analysisResult && (
         <View className="mx-4 mb-8">
           <Text className="text-xl font-bold text-white mb-4">
-            Quick Detection Tips
+            {t('pestDetection.detectionTips.title')}
           </Text>
 
           <View className="space-y-3">
@@ -521,10 +524,10 @@ const PestDetection = () => {
                 </View>
                 <View className="flex-1">
                   <Text className="text-white font-semibold text-base">
-                    Take Clear Photos
+                    {t('pestDetection.detectionTips.clearPhotos.title')}
                   </Text>
                   <Text className="text-gray-400 text-sm">
-                    Ensure good lighting and focus on affected areas
+                    {t('pestDetection.detectionTips.clearPhotos.description')}
                   </Text>
                 </View>
               </View>
@@ -537,10 +540,10 @@ const PestDetection = () => {
                 </View>
                 <View className="flex-1">
                   <Text className="text-white font-semibold text-base">
-                    Multiple Angles
+                    {t('pestDetection.detectionTips.multipleAngles.title')}
                   </Text>
                   <Text className="text-gray-400 text-sm">
-                    Capture different parts of the plant for better analysis
+                    {t('pestDetection.detectionTips.multipleAngles.description')}
                   </Text>
                 </View>
               </View>
@@ -553,10 +556,10 @@ const PestDetection = () => {
                 </View>
                 <View className="flex-1">
                   <Text className="text-white font-semibold text-base">
-                    Early Detection
+                    {t('pestDetection.detectionTips.earlyDetection.title')}
                   </Text>
                   <Text className="text-gray-400 text-sm">
-                    Regular monitoring helps catch issues early
+                    {t('pestDetection.detectionTips.earlyDetection.description')}
                   </Text>
                 </View>
               </View>

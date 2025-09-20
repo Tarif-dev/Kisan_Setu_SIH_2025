@@ -1,13 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
-  RefreshControl,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    RefreshControl,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 interface CropPrice {
@@ -21,79 +22,80 @@ interface CropPrice {
 }
 
 const MarketPrices = () => {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const [crops, setCrops] = useState<CropPrice[]>([
     {
       id: "1",
-      name: "Rice",
+      name: t('marketPrices.crops.rice'),
       price: 15.5,
       change: 0.12,
       changePercent: 1.2,
-      unit: "per bushel",
+      unit: t('marketPrices.units.perBushel'),
       icon: "leaf",
     },
     {
       id: "2",
-      name: "Wheat",
+      name: t('marketPrices.crops.wheat'),
       price: 7.26,
       change: -0.08,
       changePercent: -0.8,
-      unit: "per bushel",
+      unit: t('marketPrices.units.perBushel'),
       icon: "nutrition",
     },
     {
       id: "3",
-      name: "Corn",
+      name: t('marketPrices.crops.corn'),
       price: 4.75,
       change: 0.21,
       changePercent: 2.1,
-      unit: "per bushel",
+      unit: t('marketPrices.units.perBushel'),
       icon: "restaurant",
     },
     {
       id: "4",
-      name: "Soybeans",
+      name: t('marketPrices.crops.soybeans'),
       price: 13.89,
       change: -0.15,
       changePercent: -1.1,
-      unit: "per bushel",
+      unit: t('marketPrices.units.perBushel'),
       icon: "flower",
     },
     {
       id: "5",
-      name: "Cotton",
+      name: t('marketPrices.crops.cotton'),
       price: 0.68,
       change: 0.03,
       changePercent: 4.6,
-      unit: "per pound",
+      unit: t('marketPrices.units.perPound'),
       icon: "flower-outline",
     },
     {
       id: "6",
-      name: "Tomatoes",
+      name: t('marketPrices.crops.tomatoes'),
       price: 25.5,
       change: 1.2,
       changePercent: 4.9,
-      unit: "per kg",
+      unit: t('marketPrices.units.perKg'),
       icon: "leaf-outline",
     },
     {
       id: "7",
-      name: "Potatoes",
+      name: t('marketPrices.crops.potatoes'),
       price: 18.75,
       change: -0.85,
       changePercent: -4.3,
-      unit: "per kg",
+      unit: t('marketPrices.units.perKg'),
       icon: "nutrition-outline",
     },
     {
       id: "8",
-      name: "Onions",
+      name: t('marketPrices.crops.onions'),
       price: 22.3,
       change: 0.45,
       changePercent: 2.1,
-      unit: "per kg",
+      unit: t('marketPrices.units.perKg'),
       icon: "ellipse",
     },
   ]);
@@ -138,7 +140,7 @@ const MarketPrices = () => {
 
         <View className="items-end">
           <Text className="text-white font-bold text-xl">
-            ${crop.price.toFixed(2)}
+            {t('marketPrices.currency.symbol')}{crop.price.toFixed(2)}
           </Text>
           <View className="flex-row items-center mt-1">
             <Ionicons
@@ -169,9 +171,9 @@ const MarketPrices = () => {
             <Ionicons name="chevron-back" size={24} color="white" />
           </TouchableOpacity>
           <View className="flex-1 ml-4">
-            <Text className="text-2xl font-bold text-white">Market Prices</Text>
+            <Text className="text-2xl font-bold text-white">{t('marketPrices.title')}</Text>
             <Text className="text-gray-400 mt-1">
-              Real-time crop market prices
+              {t('marketPrices.subtitle')}
             </Text>
           </View>
           <TouchableOpacity onPress={onRefresh}>
@@ -184,23 +186,23 @@ const MarketPrices = () => {
       <View className="mx-4 mb-4">
         <View className="bg-gray-800 rounded-2xl p-4 border border-gray-700">
           <Text className="text-white font-semibold text-lg mb-3">
-            Market Summary
+            {t('marketPrices.marketSummary.title')}
           </Text>
           <View className="flex-row justify-between">
             <View className="flex-1">
-              <Text className="text-gray-400 text-sm">Gainers</Text>
+              <Text className="text-gray-400 text-sm">{t('marketPrices.marketSummary.gainers')}</Text>
               <Text className="text-green-400 font-bold text-xl">
                 {filteredCrops.filter((crop) => crop.change > 0).length}
               </Text>
             </View>
             <View className="flex-1">
-              <Text className="text-gray-400 text-sm">Losers</Text>
+              <Text className="text-gray-400 text-sm">{t('marketPrices.marketSummary.losers')}</Text>
               <Text className="text-red-400 font-bold text-xl">
                 {filteredCrops.filter((crop) => crop.change < 0).length}
               </Text>
             </View>
             <View className="flex-1">
-              <Text className="text-gray-400 text-sm">Unchanged</Text>
+              <Text className="text-gray-400 text-sm">{t('marketPrices.marketSummary.unchanged')}</Text>
               <Text className="text-gray-400 font-bold text-xl">
                 {filteredCrops.filter((crop) => crop.change === 0).length}
               </Text>
@@ -215,7 +217,7 @@ const MarketPrices = () => {
           <Ionicons name="search" size={20} color="#9CA3AF" />
           <TextInput
             className="flex-1 text-white text-lg ml-3"
-            placeholder="Search for crops"
+            placeholder={t('marketPrices.searchPlaceholder')}
             placeholderTextColor="#9CA3AF"
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -241,9 +243,9 @@ const MarketPrices = () => {
         {filteredCrops.length === 0 && (
           <View className="items-center justify-center py-8">
             <Ionicons name="search" size={48} color="#6B7280" />
-            <Text className="text-gray-400 text-lg mt-4">No crops found</Text>
+            <Text className="text-gray-400 text-lg mt-4">{t('marketPrices.noResults.title')}</Text>
             <Text className="text-gray-500 text-sm mt-2">
-              Try adjusting your search term
+              {t('marketPrices.noResults.message')}
             </Text>
           </View>
         )}

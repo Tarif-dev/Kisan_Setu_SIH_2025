@@ -1,15 +1,16 @@
 import { useVoiceAssistantStore } from "@/stores/voiceAssistantStore";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
-  Alert,
-  FlatList,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Alert,
+    FlatList,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 interface Message {
@@ -21,6 +22,7 @@ interface Message {
 }
 
 const Assistant = () => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [textInput, setTextInput] = useState("");
 
@@ -39,58 +41,26 @@ const Assistant = () => {
     processTextQuery,
     setLanguage,
     clearError,
-    reset,
     checkSupport,
     stopAll,
   } = useVoiceAssistantStore();
 
-  useEffect(() => {
-    // Check voice support on component mount
-    checkSupport();
-
-    // Add welcome message based on current language
-    addWelcomeMessage();
-
-    // Cleanup on unmount
-    return () => {
-      stopAll();
+  const addMessage = useCallback((text: string, isUser: boolean) => {
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      text,
+      isUser,
+      timestamp: new Date(),
+      language: language,
     };
-  }, []);
-
-  useEffect(() => {
-    // Add user message when transcript is available
-    if (transcript && transcript.trim()) {
-      addMessage(transcript, true);
-    }
-  }, [transcript]);
-
-  useEffect(() => {
-    // Add AI response when available
-    if (response && response.trim()) {
-      addMessage(response, false);
-    }
-  }, [response]);
-
-  useEffect(() => {
-    // Show error alerts
-    if (error) {
-      Alert.alert("Voice Assistant Error", error, [
-        { text: "OK", onPress: clearError },
-      ]);
-    }
-  }, [error]);
-
-  useEffect(() => {
-    // Add welcome message when language changes
-    addWelcomeMessage();
+    setMessages((prev) => [...prev, newMessage]);
   }, [language]);
 
-  const addWelcomeMessage = () => {
+  const addWelcomeMessage = useCallback(() => {
     const welcomeMessages = {
-      "en-US":
-        "Hello! I'm your Kisan Setu voice assistant. I can help you with farming questions in English, Hindi, Punjabi, or Bengali. Ask me anything about crops, pests, fertilizers, or farming techniques.",
-      "hi-IN":
-        "नमस्ते! मैं आपका कृषि सहायक हूं। मैं खेती के बारे में आपके सवालों का जवाब हिंदी, अंग्रेजी, पंजाबी या बंगाली में दे सकता हूं। फसल, कीट, उर्वरक या खेती की तकनीक के बारे में कुछ भी पूछें।",
+      "en-US": t('assistant.welcomeMessage'),
+      "hi-IN": t('assistant.welcomeMessage'),
+      // Keep other languages as is for now
       "pa-IN":
         "ਸਤ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ ਤੁਹਾਡਾ ਖੇਤੀ ਸਹਾਇਕ ਹਾਂ। ਮੈਂ ਪੰਜਾਬੀ, ਹਿੰਦੀ, ਅੰਗਰੇਜ਼ੀ ਜਾਂ ਬੰਗਾਲੀ ਵਿੱਚ ਖੇਤੀ ਬਾਰੇ ਤੁਹਾਡੇ ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਦੇ ਸਕਦਾ ਹਾਂ। ਫਸਲਾਂ, ਕੀੜੇ, ਖਾਦ ਜਾਂ ਖੇਤੀ ਦੀਆਂ ਤਕਨੀਕਾਂ ਬਾਰੇ ਕੁਝ ਵੀ ਪੁੱਛੋ।",
       "bn-IN":
@@ -112,18 +82,50 @@ const Assistant = () => {
         },
       ]);
     }
-  };
+  }, [messages, language, t]);
 
-  const addMessage = (text: string, isUser: boolean) => {
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      text,
-      isUser,
-      timestamp: new Date(),
-      language: language,
+  useEffect(() => {
+    // Check voice support on component mount
+    checkSupport();
+
+    // Add welcome message based on current language
+    addWelcomeMessage();
+
+    // Cleanup on unmount
+    return () => {
+      stopAll();
     };
-    setMessages((prev) => [...prev, newMessage]);
-  };
+  }, [checkSupport, addWelcomeMessage, stopAll]);
+
+  useEffect(() => {
+    // Add user message when transcript is available
+    if (transcript && transcript.trim()) {
+      addMessage(transcript, true);
+    }
+  }, [transcript, addMessage]);
+
+  useEffect(() => {
+    // Add AI response when available
+    if (response && response.trim()) {
+      addMessage(response, false);
+    }
+  }, [response, addMessage]);
+
+  useEffect(() => {
+    // Show error alerts
+    if (error) {
+      Alert.alert(t('assistant.title'), error, [
+        { text: "OK", onPress: clearError },
+      ]);
+    }
+  }, [error, clearError, t]);
+
+  useEffect(() => {
+    // Add welcome message when language changes
+    addWelcomeMessage();
+  }, [language, addWelcomeMessage]);
+
+
 
   const handleVoiceInput = async () => {
     if (isListening) {
@@ -131,8 +133,8 @@ const Assistant = () => {
     } else {
       if (!isSupported.recording) {
         Alert.alert(
-          "Microphone Access Required",
-          "Please allow microphone access to use voice features.",
+          t('assistant.microphoneAccess.title'),
+          t('assistant.microphoneAccess.message'),
           [{ text: "OK" }]
         );
         return;
@@ -156,7 +158,7 @@ const Assistant = () => {
       supportedLanguages.find(
         (lang: { code: string; name: string }) => lang.code === newLanguage
       )?.name || "Unknown";
-    addMessage(`Language changed to ${langName}`, false);
+    addMessage(`${t('assistant.languageChanged')} ${langName}`, false);
   };
 
   const getVoiceButtonColor = () => {
@@ -173,10 +175,10 @@ const Assistant = () => {
   };
 
   const getStatusText = () => {
-    if (isListening) return "Listening... Tap to stop";
-    if (isProcessing) return "Processing your request...";
-    if (isSpeaking) return "Speaking response...";
-    return "Tap microphone to speak or type your question";
+    if (isListening) return t('assistant.listening');
+    if (isProcessing) return t('assistant.processing');
+    if (isSpeaking) return t('assistant.speaking');
+    return t('assistant.defaultPrompt');
   };
 
   const renderMessage = ({ item }: { item: Message }) => (
@@ -228,7 +230,7 @@ const Assistant = () => {
               <Ionicons name="chevron-back" size={24} color="white" />
             </TouchableOpacity>
             <Text className="text-xl font-bold text-white ml-4">
-              Voice Assistant
+              {t('assistant.title')}
             </Text>
           </View>
 
@@ -308,7 +310,7 @@ const Assistant = () => {
           <TextInput
             value={textInput}
             onChangeText={setTextInput}
-            placeholder="Type your farming question..."
+            placeholder={t('assistant.placeholder')}
             placeholderTextColor="#9CA3AF"
             className="flex-1 p-4 text-white"
             multiline

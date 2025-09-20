@@ -1,16 +1,17 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
-  Alert,
-  FlatList,
-  Image,
-  Modal,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Alert,
+    FlatList,
+    Image,
+    Modal,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 interface Product {
@@ -41,6 +42,7 @@ interface Category {
 }
 
 const Marketplace = () => {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
@@ -48,18 +50,18 @@ const Marketplace = () => {
   const [cartItems, setCartItems] = useState<{ [key: string]: number }>({});
 
   const categories: Category[] = [
-    { id: "all", name: "All", icon: "grid", color: "#3B82F6" },
-    { id: "vegetables", name: "Vegetables", icon: "leaf", color: "#10B981" },
-    { id: "fruits", name: "Fruits", icon: "nutrition", color: "#F59E0B" },
-    { id: "grains", name: "Grains", icon: "restaurant", color: "#8B5CF6" },
-    { id: "dairy", name: "Dairy", icon: "water", color: "#06B6D4" },
-    { id: "organic", name: "Organic", icon: "flower", color: "#84CC16" },
+    { id: "all", name: t('marketplace.categories.all'), icon: "grid", color: "#3B82F6" },
+    { id: "vegetables", name: t('marketplace.categories.vegetables'), icon: "leaf", color: "#10B981" },
+    { id: "fruits", name: t('marketplace.categories.fruits'), icon: "nutrition", color: "#F59E0B" },
+    { id: "grains", name: t('marketplace.categories.grains'), icon: "restaurant", color: "#8B5CF6" },
+    { id: "dairy", name: t('marketplace.categories.dairy'), icon: "water", color: "#06B6D4" },
+    { id: "organic", name: t('marketplace.categories.organic'), icon: "flower", color: "#84CC16" },
   ];
 
   const products: Product[] = [
     {
       id: "1",
-      name: "Fresh Tomatoes",
+      name: t('marketplace.products.freshTomatoes'),
       price: 45,
       unit: "kg",
       farmer: {
@@ -81,7 +83,7 @@ const Marketplace = () => {
     },
     {
       id: "2",
-      name: "Basmati Rice",
+      name: t('marketplace.products.freshPotatoes'),
       price: 120,
       unit: "kg",
       farmer: {
@@ -93,9 +95,9 @@ const Marketplace = () => {
       },
       image:
         "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300&h=200&fit=crop",
-      category: "grains",
+      category: "vegetables",
       description:
-        "Premium quality Basmati rice with authentic aroma and long grains. Grown using traditional methods.",
+        "Fresh potatoes harvested from our farm. Perfect for cooking and long shelf life.",
       quantity: 100,
       certification: ["Premium Grade", "Export Quality"],
       freshness: "Fresh Stock",
@@ -103,7 +105,7 @@ const Marketplace = () => {
     },
     {
       id: "3",
-      name: "Fresh Mangoes",
+      name: t('marketplace.products.freshOnions'),
       price: 80,
       unit: "kg",
       farmer: {
@@ -115,19 +117,19 @@ const Marketplace = () => {
       },
       image:
         "https://images.unsplash.com/photo-1553279745-f28ffbfe2de7?w=300&h=200&fit=crop",
-      category: "fruits",
+      category: "vegetables",
       description:
-        "Sweet and juicy Alphonso mangoes, the king of fruits. Perfectly ripened and ready to eat.",
+        "Fresh onions with great taste. Essential ingredient for Indian cooking.",
       quantity: 30,
       certification: ["Organic", "Premium"],
-      freshness: "Tree Fresh",
+      freshness: "Fresh Stock",
       harvestDate: "2025-09-10",
     },
     {
       id: "4",
-      name: "Farm Fresh Milk",
+      name: t('marketplace.products.freshCarrots'),
       price: 65,
-      unit: "liter",
+      unit: "kg",
       farmer: {
         name: "Mohit Sharma",
         location: "Rajasthan, India",
@@ -137,17 +139,17 @@ const Marketplace = () => {
       },
       image:
         "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=300&h=200&fit=crop",
-      category: "dairy",
+      category: "vegetables",
       description:
-        "Pure cow milk from grass-fed cows. Rich in nutrients and delivered fresh daily.",
+        "Fresh carrots rich in nutrients. Perfect for salads and cooking.",
       quantity: 20,
-      certification: ["FSSAI", "Pasteurized"],
-      freshness: "Daily Fresh",
+      certification: ["Organic", "FSSAI"],
+      freshness: "Morning Fresh",
       harvestDate: "2025-09-13",
     },
     {
       id: "5",
-      name: "Organic Spinach",
+      name: t('marketplace.products.freshSpinach'),
       price: 25,
       unit: "bunch",
       farmer: {
@@ -169,9 +171,9 @@ const Marketplace = () => {
     },
     {
       id: "6",
-      name: "Wheat Flour",
+      name: t('marketplace.products.freshCauliflower'),
       price: 55,
-      unit: "kg",
+      unit: "piece",
       farmer: {
         name: "Vikram Singh",
         location: "Madhya Pradesh, India",
@@ -181,12 +183,12 @@ const Marketplace = () => {
       },
       image:
         "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=300&h=200&fit=crop",
-      category: "grains",
+      category: "vegetables",
       description:
-        "Stone-ground whole wheat flour from organically grown wheat. No preservatives added.",
+        "Fresh cauliflower, perfect for Indian dishes. No pesticides used.",
       quantity: 80,
-      certification: ["Organic", "Stone Ground"],
-      freshness: "Fresh Ground",
+      certification: ["Organic", "Pesticide-Free"],
+      freshness: "Morning Fresh",
       harvestDate: "2025-09-01",
     },
   ];
@@ -205,21 +207,21 @@ const Marketplace = () => {
       ...prev,
       [productId]: (prev[productId] || 0) + 1,
     }));
-    Alert.alert("Added to Cart", "Product added to your cart successfully!");
+    Alert.alert(t('marketplace.addToCart'), t('marketplace.orderSuccess.message'));
   };
 
   const buyNow = (product: Product) => {
     Alert.alert(
-      "ONDC Order",
-      `Proceed to buy ${product.name} from ${product.farmer.name}?\n\nPrice: ₹${product.price}/${product.unit}`,
+      t('marketplace.orderConfirmation.title'),
+      `${t('marketplace.orderConfirmation.proceed')} ${product.name} ${t('marketplace.orderConfirmation.from')} ${product.farmer.name}?\n\n${t('marketplace.orderConfirmation.price')}: ₹${product.price}/${product.unit}`,
       [
         { text: "Cancel", style: "cancel" },
         {
           text: "Proceed",
           onPress: () => {
             Alert.alert(
-              "Order Placed",
-              "Your order has been placed through ONDC network. You will receive updates shortly."
+              t('marketplace.orderSuccess.title'),
+              t('marketplace.orderSuccess.message')
             );
           },
         },
@@ -303,7 +305,7 @@ const Marketplace = () => {
             className="bg-gray-700 rounded-lg px-3 py-2 flex-1 mr-1"
           >
             <Text className="text-white text-xs text-center font-medium">
-              Add to Cart
+              {t('marketplace.addToCart')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -311,7 +313,7 @@ const Marketplace = () => {
             className="bg-green-500 rounded-lg px-3 py-2 flex-1 ml-1"
           >
             <Text className="text-white text-xs text-center font-medium">
-              Buy Now
+              {t('marketplace.buyNow')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -325,7 +327,7 @@ const Marketplace = () => {
       <View className="pt-12 pb-4 px-4 bg-gray-900">
         <View className="flex-row items-center justify-between mb-4">
           <Text className="text-2xl font-bold text-white">
-            ONDC Marketplace
+            {t('marketplace.title')}
           </Text>
           <View className="flex-row items-center">
             <TouchableOpacity
@@ -362,10 +364,10 @@ const Marketplace = () => {
             <Ionicons name="globe" size={20} color="#3B82F6" />
             <View className="ml-3 flex-1">
               <Text className="text-blue-400 font-semibold">
-                Powered by ONDC
+                {t('marketplace.ondcBadge.title')}
               </Text>
               <Text className="text-gray-300 text-sm">
-                Direct from farmers to your doorstep
+                {t('marketplace.ondcBadge.subtitle')}
               </Text>
             </View>
           </View>
@@ -376,17 +378,17 @@ const Marketplace = () => {
           <View className="flex-row items-center justify-between">
             <View className="flex-1">
               <Text className="text-green-400 font-semibold">
-                Are you a farmer?
+                {t('marketplace.farmerCta.title')}
               </Text>
               <Text className="text-gray-300 text-sm">
-                Join our marketplace and sell directly to customers
+                {t('marketplace.farmerCta.subtitle')}
               </Text>
             </View>
             <TouchableOpacity
               onPress={() => router.push("/farmer-onboarding")}
               className="bg-green-500 rounded-lg px-4 py-2"
             >
-              <Text className="text-white font-medium">Join Now</Text>
+              <Text className="text-white font-medium">{t('marketplace.farmerCta.button')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -397,7 +399,7 @@ const Marketplace = () => {
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Search fresh produce..."
+            placeholder={t('marketplace.searchPlaceholder')}
             placeholderTextColor="#9CA3AF"
             className="text-white ml-3 flex-1"
           />
@@ -487,7 +489,7 @@ const Marketplace = () => {
                 {/* Farmer Card */}
                 <View className="bg-gray-800 rounded-xl p-4 mb-4">
                   <Text className="text-white font-semibold mb-3">
-                    Farmer Details
+                    {t('marketplace.farmerDetails.title')}
                   </Text>
                   <View className="flex-row items-center">
                     <Image
@@ -512,7 +514,7 @@ const Marketplace = () => {
                       onPress={() => contactFarmer(selectedProduct.farmer)}
                       className="bg-blue-500 rounded-lg px-4 py-2"
                     >
-                      <Text className="text-white font-medium">Contact</Text>
+                      <Text className="text-white font-medium">{t('marketplace.farmerDetails.contact')}</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -520,27 +522,27 @@ const Marketplace = () => {
                 {/* Product Details */}
                 <View className="bg-gray-800 rounded-xl p-4 mb-4">
                   <Text className="text-white font-semibold mb-3">
-                    Product Details
+                    {t('marketplace.productDetails.title')}
                   </Text>
                   <Text className="text-gray-300 text-sm leading-5 mb-3">
                     {selectedProduct.description}
                   </Text>
 
                   <View className="flex-row justify-between mb-2">
-                    <Text className="text-gray-400">Available Quantity:</Text>
+                    <Text className="text-gray-400">{t('marketplace.productDetails.availableQuantity')}:</Text>
                     <Text className="text-white">
                       {selectedProduct.quantity} {selectedProduct.unit}
                     </Text>
                   </View>
                   <View className="flex-row justify-between mb-2">
-                    <Text className="text-gray-400">Harvest Date:</Text>
+                    <Text className="text-gray-400">{t('marketplace.productDetails.harvestDate')}:</Text>
                     <Text className="text-white">
                       {selectedProduct.harvestDate}
                     </Text>
                   </View>
 
                   {/* Certifications */}
-                  <Text className="text-gray-400 mb-2">Certifications:</Text>
+                  <Text className="text-gray-400 mb-2">{t('marketplace.productDetails.certifications')}:</Text>
                   <View className="flex-row flex-wrap">
                     {selectedProduct.certification.map((cert, index) => (
                       <View
@@ -560,7 +562,7 @@ const Marketplace = () => {
                     className="bg-gray-700 rounded-xl py-4 px-6 flex-1"
                   >
                     <Text className="text-white text-center font-semibold text-lg">
-                      Add to Cart
+                      {t('marketplace.addToCart')}
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -568,7 +570,7 @@ const Marketplace = () => {
                     className="bg-green-500 rounded-xl py-4 px-6 flex-1"
                   >
                     <Text className="text-white text-center font-semibold text-lg">
-                      Buy Now
+                      {t('marketplace.buyNow')}
                     </Text>
                   </TouchableOpacity>
                 </View>

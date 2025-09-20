@@ -2,12 +2,13 @@ import { useLocationStore } from "@/stores/locationStore";
 import { useWeatherStore } from "@/stores/weatherStore";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
-  RefreshControl,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
+    RefreshControl,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 interface Advisory {
@@ -20,7 +21,8 @@ interface Advisory {
   actionItems: string[];
 }
 
-const Advisory = () => {
+const AdvisoryScreen = () => {
+  const { t } = useTranslation();
   const [refreshing, setRefreshing] = useState(false);
   const { weather, fetchWeather } = useWeatherStore();
   const { location, getCurrentLocation } = useLocationStore();
@@ -28,63 +30,39 @@ const Advisory = () => {
   const [advisories] = useState<Advisory[]>([
     {
       id: "1",
-      title: "Wheat Disease Warning",
+      title: t('advisory.advisories.wheatDisease.title'),
       type: "warning",
-      description:
-        "High risk of fungal diseases due to recent rainfall and humid conditions.",
+      description: t('advisory.advisories.wheatDisease.description'),
       icon: "warning",
       priority: "high",
-      actionItems: [
-        "Apply fungicide within 48 hours",
-        "Inspect crops daily for early symptoms",
-        "Ensure proper field drainage",
-        "Remove infected plant debris",
-      ],
+      actionItems: t('advisory.advisories.wheatDisease.actions', { returnObjects: true }) as string[],
     },
     {
       id: "2",
-      title: "Optimal Irrigation Time",
+      title: t('advisory.advisories.irrigation.title'),
       type: "info",
-      description:
-        "Current soil moisture levels suggest irrigation is needed for better crop yield.",
+      description: t('advisory.advisories.irrigation.description'),
       icon: "water",
       priority: "medium",
-      actionItems: [
-        "Irrigate during early morning hours",
-        "Check soil moisture at 6-inch depth",
-        "Apply 2-3 inches of water per session",
-        "Monitor weather forecast before irrigation",
-      ],
+      actionItems: t('advisory.advisories.irrigation.actions', { returnObjects: true }) as string[],
     },
     {
       id: "3",
-      title: "Harvest Recommendation",
+      title: t('advisory.advisories.harvest.title'),
       type: "success",
-      description:
-        "Rice crops in your area are ready for harvest based on maturity indicators.",
+      description: t('advisory.advisories.harvest.description'),
       icon: "checkmark-circle",
       priority: "high",
-      actionItems: [
-        "Begin harvest within next 5-7 days",
-        "Check grain moisture content",
-        "Prepare storage facilities",
-        "Arrange transportation for harvested crops",
-      ],
+      actionItems: t('advisory.advisories.harvest.actions', { returnObjects: true }) as string[],
     },
     {
       id: "4",
-      title: "Fertilizer Application",
+      title: t('advisory.advisories.fertilizer.title'),
       type: "info",
-      description:
-        "Second dose of fertilizer application is due for corn crops.",
+      description: t('advisory.advisories.fertilizer.description'),
       icon: "leaf",
       priority: "medium",
-      actionItems: [
-        "Apply NPK fertilizer in 4:2:1 ratio",
-        "Water thoroughly after application",
-        "Apply during cooler parts of the day",
-        "Monitor crop response after 7 days",
-      ],
+      actionItems: t('advisory.advisories.fertilizer.actions', { returnObjects: true }) as string[],
     },
   ]);
 
@@ -173,7 +151,7 @@ const Advisory = () => {
             {expanded && (
               <View className="mt-2">
                 <Text className="text-gray-400 font-medium mb-2">
-                  Action Items:
+                  {t('advisory.actionItems')}:
                 </Text>
                 {advisory.actionItems.map((item, index) => (
                   <View key={index} className="flex-row items-start mb-1">
@@ -201,9 +179,9 @@ const Advisory = () => {
       <View className="pt-12 pb-6 px-4 bg-gray-800">
         <View className="flex-row items-center justify-between">
           <View>
-            <Text className="text-2xl font-bold text-white">Advisory</Text>
+            <Text className="text-2xl font-bold text-white">{t('advisory.title')}</Text>
             <Text className="text-gray-400 mt-1">
-              Personalized farming recommendations
+              {t('advisory.subtitle')}
             </Text>
           </View>
           <TouchableOpacity onPress={onRefresh}>
@@ -222,28 +200,28 @@ const Advisory = () => {
         <View className="bg-gray-800 rounded-2xl p-4 mb-6 border border-gray-700">
           <View className="flex-row items-center justify-between mb-4">
             <Text className="text-white font-semibold text-lg">
-              Current Conditions
+              {t('advisory.currentConditions')}
             </Text>
             <Ionicons name="location" size={16} color="#22C55E" />
           </View>
 
           <View className="flex-row items-center justify-between">
             <View>
-              <Text className="text-gray-400 text-sm">Location</Text>
+              <Text className="text-gray-400 text-sm">{t('advisory.location')}</Text>
               <Text className="text-white font-medium">
-                {location?.city || "Current Location"}
+                {location?.city || t('advisory.currentLocation')}
               </Text>
             </View>
 
             <View className="items-center">
-              <Text className="text-gray-400 text-sm">Temperature</Text>
+              <Text className="text-gray-400 text-sm">{t('advisory.temperature')}</Text>
               <Text className="text-white font-medium">
                 {weather?.temperature || "--"}°C
               </Text>
             </View>
 
             <View className="items-end">
-              <Text className="text-gray-400 text-sm">Humidity</Text>
+              <Text className="text-gray-400 text-sm">{t('advisory.humidity')}</Text>
               <Text className="text-white font-medium">
                 {weather?.humidity || "--"}%
               </Text>
@@ -258,7 +236,7 @@ const Advisory = () => {
               {advisories.filter((a) => a.priority === "high").length}
             </Text>
             <Text className="text-red-400 text-xs text-center mt-1">
-              High Priority
+              {t('advisory.priority.high')}
             </Text>
           </View>
 
@@ -267,7 +245,7 @@ const Advisory = () => {
               {advisories.filter((a) => a.priority === "medium").length}
             </Text>
             <Text className="text-yellow-400 text-xs text-center mt-1">
-              Medium Priority
+              {t('advisory.priority.medium')}
             </Text>
           </View>
 
@@ -276,7 +254,7 @@ const Advisory = () => {
               {advisories.filter((a) => a.priority === "low").length}
             </Text>
             <Text className="text-green-400 text-xs text-center mt-1">
-              Low Priority
+              {t('advisory.priority.low')}
             </Text>
           </View>
         </View>
@@ -284,7 +262,7 @@ const Advisory = () => {
         {/* Advisory List */}
         <View className="mb-8">
           <Text className="text-white font-semibold text-lg mb-4">
-            Today's Recommendations
+            {t('advisory.recommendations')}
           </Text>
 
           {advisories
@@ -302,14 +280,12 @@ const Advisory = () => {
           <View className="flex-row items-center mb-3">
             <Ionicons name="cloud-outline" size={20} color="#3B82F6" />
             <Text className="text-blue-400 font-semibold ml-2">
-              Weather Alert
+              {t('advisory.weatherAlert.title')}
             </Text>
           </View>
 
           <Text className="text-gray-300 text-sm leading-5">
-            Heavy rainfall expected tomorrow. Prepare for potential waterlogging
-            in low-lying areas. Postpone any planned fertilizer application
-            until after the rain.
+            {t('advisory.weatherAlert.message')}
           </Text>
         </View>
 
@@ -317,13 +293,11 @@ const Advisory = () => {
         <View className="bg-gray-800 rounded-2xl p-4 mb-8 border border-gray-700">
           <View className="flex-row items-center mb-3">
             <Ionicons name="bulb" size={20} color="#22C55E" />
-            <Text className="text-white font-semibold ml-2">Farming Tip</Text>
+            <Text className="text-white font-semibold ml-2">{t('advisory.farmingTip.title')}</Text>
           </View>
 
           <Text className="text-gray-300 text-sm leading-5">
-            Regularly monitor your crops for early signs of pest and disease
-            problems. Early detection and treatment can prevent major crop
-            losses and reduce treatment costs.
+            {t('advisory.farmingTip.message')}
           </Text>
         </View>
       </ScrollView>
@@ -331,4 +305,4 @@ const Advisory = () => {
   );
 };
 
-export default Advisory;
+export default AdvisoryScreen;

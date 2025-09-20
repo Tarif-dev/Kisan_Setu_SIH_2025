@@ -2,40 +2,36 @@ import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import React, { memo, useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
-  ActivityIndicator,
-  Alert,
-  Image,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    Image,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { locationService } from "../services/locationService";
 import {
-  CropRecommendation,
-  FertilizerRecommendation,
-  SoilAnalysisResult,
-  SoilData,
-  soilHealthService,
+    CropRecommendation,
+    FertilizerRecommendation,
+    SoilAnalysisResult,
+    SoilData,
+    soilHealthService,
 } from "../services/soilHealthService";
 
+interface InputFieldProps {
+  label: string;
+  value: string;
+  onChangeText: (text: string) => void;
+  placeholder: string;
+  unit?: string;
+}
+
 // Memoized InputField component to prevent keyboard closing
-const InputField = memo(
-  ({
-    label,
-    value,
-    onChangeText,
-    placeholder,
-    unit,
-  }: {
-    label: string;
-    value: string;
-    onChangeText: (text: string) => void;
-    placeholder: string;
-    unit?: string;
-  }) => (
+const InputField: React.FC<InputFieldProps> = memo(({ label, value, onChangeText, placeholder, unit }) => (
     <View className="mb-4">
       <Text className="text-gray-300 text-sm mb-2">{label}</Text>
       <View className="bg-gray-800 rounded-xl border border-gray-700">
@@ -58,11 +54,12 @@ const InputField = memo(
         )}
       </View>
     </View>
-  )
-);
+));
+
+InputField.displayName = 'InputField';
 
 const SoilHealth = () => {
-  const [soilData, setSoilData] = useState<SoilData>({});
+  const { t } = useTranslation();
   // Store raw text values for inputs to prevent keyboard closing
   const [inputValues, setInputValues] = useState({
     ph: "",
@@ -80,10 +77,36 @@ const SoilHealth = () => {
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [hasLocationPermission, setHasLocationPermission] = useState(false);
 
+  const fetchCurrentLocation = useCallback(async () => {
+    setIsLoadingLocation(true);
+    try {
+      const farmingLocation = await locationService.getFarmingLocationInfo();
+      setLocation(farmingLocation);
+    } catch (error) {
+      console.error("Failed to fetch current location:", error);
+      // Don't show error to user for auto-fetch, they can manually request if needed
+    } finally {
+      setIsLoadingLocation(false);
+    }
+  }, []);
+
+  const checkLocationPermissionAndFetch = useCallback(async () => {
+    try {
+      const hasPermission = await locationService.hasLocationPermission();
+      setHasLocationPermission(hasPermission);
+
+      if (hasPermission) {
+        await fetchCurrentLocation();
+      }
+    } catch (error) {
+      console.error("Failed to check location permission:", error);
+    }
+  }, [fetchCurrentLocation]);
+
   // Check location permission and auto-fetch location on component mount
   useEffect(() => {
     checkLocationPermissionAndFetch();
-  }, []);
+  }, [checkLocationPermissionAndFetch]);
 
   // Memoized input handlers to prevent keyboard closing
   const handlePhChange = useCallback((text: string) => {
@@ -115,32 +138,6 @@ const SoilHealth = () => {
       setInputValues((prev) => ({ ...prev, potassium: text }));
     }
   }, []);
-
-  const checkLocationPermissionAndFetch = async () => {
-    try {
-      const hasPermission = await locationService.hasLocationPermission();
-      setHasLocationPermission(hasPermission);
-
-      if (hasPermission) {
-        await fetchCurrentLocation();
-      }
-    } catch (error) {
-      console.error("Failed to check location permission:", error);
-    }
-  };
-
-  const fetchCurrentLocation = async () => {
-    setIsLoadingLocation(true);
-    try {
-      const farmingLocation = await locationService.getFarmingLocationInfo();
-      setLocation(farmingLocation);
-    } catch (error) {
-      console.error("Failed to fetch current location:", error);
-      // Don't show error to user for auto-fetch, they can manually request if needed
-    } finally {
-      setIsLoadingLocation(false);
-    }
-  };
 
   const handleUseCurrentLocation = async () => {
     setIsLoadingLocation(true);
@@ -223,19 +220,19 @@ const SoilHealth = () => {
 
   const showImagePickerOptions = () => {
     Alert.alert(
-      "Upload Soil Report",
-      "Choose an option to upload your soil test report",
+      t('soilHealth.uploadReport.options.title'),
+      t('soilHealth.uploadReport.options.message'),
       [
         {
-          text: "Camera",
+          text: t('soilHealth.uploadReport.options.camera'),
           onPress: takePhotoWithCamera,
         },
         {
-          text: "Gallery",
+          text: t('soilHealth.uploadReport.options.gallery'),
           onPress: pickImageFromGallery,
         },
         {
-          text: "Cancel",
+          text: t('soilHealth.uploadReport.options.cancel'),
           style: "cancel",
         },
       ]
@@ -405,7 +402,7 @@ const SoilHealth = () => {
             </TouchableOpacity>
             <View className="ml-4">
               <Text className="text-xl font-bold text-white">
-                Soil Health Analysis
+                {t('soilHealth.title')}
               </Text>
               {location && hasLocationPermission && (
                 <View className="flex-row items-center mt-1">
@@ -442,7 +439,7 @@ const SoilHealth = () => {
                 activeTab === "input" ? "text-white" : "text-gray-400"
               }`}
             >
-              Manual Input
+              {t('soilHealth.tabs.manualInput')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -456,7 +453,7 @@ const SoilHealth = () => {
                 activeTab === "upload" ? "text-white" : "text-gray-400"
               }`}
             >
-              Upload Report
+              {t('soilHealth.tabs.uploadReport')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -464,12 +461,12 @@ const SoilHealth = () => {
 
       {/* Location Input */}
       <View className="mx-4 mb-6">
-        <Text className="text-gray-300 text-sm mb-2">Location</Text>
+        <Text className="text-gray-300 text-sm mb-2">{t('soilHealth.location.label')}</Text>
         <View className="bg-gray-800 rounded-xl border border-gray-700">
           <TextInput
             value={location}
             onChangeText={setLocation}
-            placeholder="Enter your location for better recommendations"
+            placeholder={t('soilHealth.location.placeholder')}
             placeholderTextColor="#9CA3AF"
             className="p-4 text-white text-base"
           />
@@ -487,7 +484,7 @@ const SoilHealth = () => {
             <Ionicons name="location" size={18} color="#3B82F6" />
           )}
           <Text className="text-blue-400 font-medium ml-2">
-            {isLoadingLocation ? "Getting Location..." : "Use Current Location"}
+            {isLoadingLocation ? t('soilHealth.location.gettingLocation') : t('soilHealth.location.useCurrentLocation')}
           </Text>
         </TouchableOpacity>
 
@@ -495,7 +492,7 @@ const SoilHealth = () => {
           <View className="mt-2 flex-row items-center">
             <Ionicons name="checkmark-circle" size={16} color="#22C55E" />
             <Text className="text-green-400 text-sm ml-1">
-              Location set: {location}
+              {t('soilHealth.location.locationSet')}: {location}
             </Text>
           </View>
         )}
@@ -504,7 +501,7 @@ const SoilHealth = () => {
           <View className="mt-2 flex-row items-center">
             <Ionicons name="information-circle" size={16} color="#3B82F6" />
             <Text className="text-blue-400 text-sm ml-1">
-              Tap "Use Current Location" for better recommendations
+              {t('soilHealth.location.tapToUse')}
             </Text>
           </View>
         )}
@@ -514,54 +511,54 @@ const SoilHealth = () => {
         /* Manual Input Tab */
         <View className="mx-4 mb-6">
           <Text className="text-xl font-bold text-white mb-4">
-            Enter Soil Test Data
+            {t('soilHealth.manualInput.title')}
           </Text>
 
           <InputField
-            label="Soil pH Level"
+            label={t('soilHealth.manualInput.fields.ph.label')}
             value={inputValues.ph}
             onChangeText={handlePhChange}
-            placeholder="6.0 - 8.0"
-            unit="pH"
+            placeholder={t('soilHealth.manualInput.fields.ph.placeholder')}
+            unit={t('soilHealth.manualInput.fields.ph.unit')}
           />
 
           <InputField
-            label="Organic Matter"
+            label={t('soilHealth.manualInput.fields.organicMatter.label')}
             value={inputValues.organicMatter}
             onChangeText={handleOrganicMatterChange}
-            placeholder="1.0 - 5.0"
-            unit="%"
+            placeholder={t('soilHealth.manualInput.fields.organicMatter.placeholder')}
+            unit={t('soilHealth.manualInput.fields.organicMatter.unit')}
           />
 
           <InputField
-            label="Nitrogen (N)"
+            label={t('soilHealth.manualInput.fields.nitrogen.label')}
             value={inputValues.nitrogen}
             onChangeText={handleNitrogenChange}
-            placeholder="Available nitrogen"
-            unit="kg/ha"
+            placeholder={t('soilHealth.manualInput.fields.nitrogen.placeholder')}
+            unit={t('soilHealth.manualInput.fields.nitrogen.unit')}
           />
 
           <InputField
-            label="Phosphorus (P)"
+            label={t('soilHealth.manualInput.fields.phosphorus.label')}
             value={inputValues.phosphorus}
             onChangeText={handlePhosphorusChange}
-            placeholder="Available phosphorus"
-            unit="kg/ha"
+            placeholder={t('soilHealth.manualInput.fields.phosphorus.placeholder')}
+            unit={t('soilHealth.manualInput.fields.phosphorus.unit')}
           />
 
           <InputField
-            label="Potassium (K)"
+            label={t('soilHealth.manualInput.fields.potassium.label')}
             value={inputValues.potassium}
             onChangeText={handlePotassiumChange}
-            placeholder="Available potassium"
-            unit="kg/ha"
+            placeholder={t('soilHealth.manualInput.fields.potassium.placeholder')}
+            unit={t('soilHealth.manualInput.fields.potassium.unit')}
           />
         </View>
       ) : (
         /* Upload Report Tab */
         <View className="mx-4 mb-6">
           <Text className="text-xl font-bold text-white mb-4">
-            Upload Soil Test Report
+            {t('soilHealth.uploadReport.title')}
           </Text>
 
           {soilReportImage ? (
@@ -585,7 +582,7 @@ const SoilHealth = () => {
               >
                 <Ionicons name="refresh" size={16} color="white" />
                 <Text className="text-white font-medium ml-2">
-                  Change Image
+                  {t('soilHealth.uploadReport.changeImage')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -598,10 +595,10 @@ const SoilHealth = () => {
                 <Ionicons name="camera" size={24} color="#22C55E" />
               </View>
               <Text className="text-white font-medium text-base mb-1">
-                Upload Soil Report
+                {t('soilHealth.uploadReport.uploadButton')}
               </Text>
               <Text className="text-gray-400 text-sm text-center">
-                Take a photo or select from gallery
+                {t('soilHealth.uploadReport.description')}
               </Text>
             </TouchableOpacity>
           )}
@@ -621,7 +618,7 @@ const SoilHealth = () => {
             <Ionicons name="analytics" size={20} color="white" />
           )}
           <Text className="text-white font-semibold ml-2 text-lg">
-            {isAnalyzing ? "Analyzing with AI..." : "Analyze Soil"}
+            {isAnalyzing ? t('soilHealth.analysis.analyzing') : t('soilHealth.analysis.analyzeButton')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -632,11 +629,11 @@ const SoilHealth = () => {
           {/* Soil Health Score */}
           <View className="bg-gray-800 rounded-xl p-6 border border-gray-700 mb-6">
             <Text className="text-xl font-bold text-white mb-4">
-              Soil Health Assessment
+              {t('soilHealth.results.soilHealth.title')}
             </Text>
             <View className="flex-row items-center justify-between mb-4">
               <View>
-                <Text className="text-gray-300">Overall Health Score</Text>
+                <Text className="text-gray-300">{t('soilHealth.results.soilHealth.score')}</Text>
                 <Text className="text-3xl font-bold text-green-400">
                   {analysisResult.soilHealthScore}/100
                 </Text>
@@ -671,7 +668,7 @@ const SoilHealth = () => {
             {analysisResult.deficiencies.length > 0 && (
               <View className="mt-4">
                 <Text className="text-gray-300 font-medium mb-2">
-                  Deficiencies Detected:
+                  {t('soilHealth.results.soilHealth.deficiencies')}
                 </Text>
                 {analysisResult.deficiencies.map((deficiency, index) => (
                   <Text key={index} className="text-red-400 text-sm mb-1">
@@ -685,7 +682,7 @@ const SoilHealth = () => {
           {/* Crop Recommendations */}
           <View className="mb-6">
             <Text className="text-xl font-bold text-white mb-4">
-              Recommended Crops
+              {t('soilHealth.results.cropRecommendations.title')}
             </Text>
             {analysisResult.cropSuggestions.map((crop, index) => (
               <CropCard key={index} crop={crop} />
@@ -695,7 +692,7 @@ const SoilHealth = () => {
           {/* Fertilizer Recommendations */}
           <View className="mb-6">
             <Text className="text-xl font-bold text-white mb-4">
-              Fertilizer Recommendations
+              {t('soilHealth.results.fertilizerRecommendations.title')}
             </Text>
             {analysisResult.fertilizerRecommendations.map(
               (fertilizer, index) => (
@@ -707,7 +704,7 @@ const SoilHealth = () => {
           {/* Improvement Plan */}
           <View className="mb-6">
             <Text className="text-xl font-bold text-white mb-4">
-              Soil Improvement Plan
+              {t('soilHealth.results.improvementPlan.title')}
             </Text>
             <View className="bg-gray-800 rounded-xl p-4 border border-gray-700">
               {analysisResult.improvementPlan.map((step, index) => (
