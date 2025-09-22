@@ -4,6 +4,16 @@ import config from "../config/environment";
 interface GeminiResponse {
   text: string;
   confidence?: number;
+  language?: string;
+}
+
+interface LocationContext {
+  latitude?: number;
+  longitude?: number;
+  address?: string;
+  region?: string;
+  state?: string;
+  country?: string;
 }
 
 interface GeminiImageAnalysis {
@@ -24,11 +34,27 @@ class GeminiService {
 
   async generateTextResponse(
     prompt: string,
-    context?: string
+    context?: string,
+    language?: string,
+    location?: LocationContext
   ): Promise<GeminiResponse> {
     try {
       if (!this.apiKey) {
         throw new Error("Gemini API key not configured");
+      }
+
+      // Build enhanced prompt with language and location context
+      let enhancedPrompt = prompt;
+
+      if (language && language !== "en") {
+        enhancedPrompt = `Please respond in ${language} language. Keep answers short and clear for farmers with basic education. ${prompt}`;
+      } else {
+        enhancedPrompt = `Please respond in English. Keep answers short and clear for farmers with basic education. ${prompt}`;
+      }
+
+      if (location) {
+        const locationInfo = this.buildLocationContext(location);
+        enhancedPrompt = `${locationInfo}\n\n${enhancedPrompt}`;
       }
 
       const requestBody = {
@@ -36,7 +62,9 @@ class GeminiService {
           {
             parts: [
               {
-                text: context ? `${context}\n\n${prompt}` : prompt,
+                text: context
+                  ? `${context}\n\n${enhancedPrompt}`
+                  : enhancedPrompt,
               },
             ],
           },
@@ -121,6 +149,7 @@ class GeminiService {
           return {
             text: candidate.content.parts[0].text,
             confidence: candidate.finishReason === "STOP" ? 0.9 : 0.7,
+            language: language || "en",
           };
         }
       }
@@ -321,6 +350,59 @@ Focus on practical, immediate actions the farmer should take.
 `;
 
     return await this.generateTextResponse(prompt);
+  }
+
+  // Build location context string for prompts
+  private buildLocationContext(location: LocationContext): string {
+    let context = "Location Context:";
+
+    if (location.address) {
+      context += `\nAddress: ${location.address}`;
+    }
+
+    if (location.region) {
+      context += `\nRegion: ${location.region}`;
+    }
+
+    if (location.state) {
+      context += `\nState: ${location.state}`;
+    }
+
+    if (location.country) {
+      context += `\nCountry: ${location.country}`;
+    }
+
+    if (location.latitude && location.longitude) {
+      context += `\nCoordinates: ${location.latitude}, ${location.longitude}`;
+    }
+
+    context +=
+      "\n\nPlease provide advice specific to this location's climate, soil conditions, and agricultural practices.";
+
+    return context;
+  }
+
+  // Enhanced assistant response with location and language support
+  async getAssistantResponse(
+    userInput: string,
+    language: string = "en",
+    location?: LocationContext,
+    context?: string
+  ): Promise<GeminiResponse> {
+    let prompt = `
+You are an expert agricultural assistant helping farmers. The user said: "${userInput}"
+
+Guidelines:
+- Keep responses short and practical (2-3 sentences max)
+- Use simple language suitable for farmers with basic education
+- Focus on actionable advice
+- Be encouraging and supportive
+- If the query is not agriculture-related, politely redirect to farming topics
+
+Provide helpful agricultural advice or answer the farming question.
+`;
+
+    return await this.generateTextResponse(prompt, context, language, location);
   }
 }
 

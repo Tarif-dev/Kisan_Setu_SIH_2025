@@ -3,6 +3,10 @@ export const config = {
   // API Keys
   GEMINI_API_KEY: process.env.EXPO_PUBLIC_GEMINI_API_KEY || "",
   GOOGLE_WEATHER_API_KEY: process.env.EXPO_PUBLIC_GOOGLE_WEATHER_API_KEY || "",
+  GOOGLE_SPEECH_API_KEY:
+    process.env.EXPO_PUBLIC_GOOGLE_SPEECH_API_KEY ||
+    process.env.EXPO_PUBLIC_GEMINI_API_KEY ||
+    "",
 
   // App Configuration
   APP_NAME: process.env.EXPO_PUBLIC_APP_NAME || "Kisan Setu",

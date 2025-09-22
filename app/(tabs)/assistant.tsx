@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 interface Message {
   id: string;
@@ -21,6 +22,7 @@ interface Message {
 }
 
 const Assistant = () => {
+  const { t, currentLanguage } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([]);
   const [textInput, setTextInput] = useState("");
 
@@ -74,8 +76,8 @@ const Assistant = () => {
   useEffect(() => {
     // Show error alerts
     if (error) {
-      Alert.alert("Voice Assistant Error", error, [
-        { text: "OK", onPress: clearError },
+      Alert.alert(t("common.error"), error, [
+        { text: t("common.cancel"), onPress: clearError },
       ]);
     }
   }, [error]);
@@ -87,8 +89,7 @@ const Assistant = () => {
 
   const addWelcomeMessage = () => {
     const welcomeMessages = {
-      "en-US":
-        "Hello! I'm your Kisan Setu voice assistant. I can help you with farming questions in English, Hindi, Punjabi, or Bengali. Ask me anything about crops, pests, fertilizers, or farming techniques.",
+      "en-US": t("assistant.askAnything"),
       "hi-IN":
         "नमस्ते! मैं आपका कृषि सहायक हूं। मैं खेती के बारे में आपके सवालों का जवाब हिंदी, अंग्रेजी, पंजाबी या बंगाली में दे सकता हूं। फसल, कीट, उर्वरक या खेती की तकनीक के बारे में कुछ भी पूछें।",
       "pa-IN":
@@ -228,7 +229,7 @@ const Assistant = () => {
               <Ionicons name="chevron-back" size={24} color="white" />
             </TouchableOpacity>
             <Text className="text-xl font-bold text-white ml-4">
-              Voice Assistant
+              {t("assistant.title")}
             </Text>
           </View>
 

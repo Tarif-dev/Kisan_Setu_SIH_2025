@@ -1,9 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React from "react";
+import { useLanguage } from "../../contexts/LanguageContext";
 import "../../globals.css";
 
 export default function TabLayout() {
+  const { t } = useLanguage();
+
   return (
     <Tabs
       screenOptions={{
@@ -26,7 +29,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: t("navigation.home"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
           ),
@@ -35,7 +38,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="advisory"
         options={{
-          title: "Advisory",
+          title: t("navigation.advisory"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="analytics" size={size} color={color} />
           ),
@@ -44,7 +47,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="assistant"
         options={{
-          title: "Assistant",
+          title: t("navigation.assistant"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="mic" size={size} color={color} />
           ),
@@ -53,7 +56,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="marketplace"
         options={{
-          title: "Marketplace",
+          title: t("navigation.marketplace"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="storefront" size={size} color={color} />
           ),
@@ -62,7 +65,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: "Settings",
+          title: t("navigation.settings"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="settings" size={size} color={color} />
           ),

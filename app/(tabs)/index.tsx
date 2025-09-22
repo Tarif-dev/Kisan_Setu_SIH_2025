@@ -11,8 +11,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const Home = () => {
+  const { t } = useLanguage();
   const [refreshing, setRefreshing] = useState(false);
   const {
     weather,
@@ -31,7 +33,7 @@ const Home = () => {
       await fetchWeather();
     } catch (error) {
       Alert.alert(
-        "Error",
+        t("common.error"),
         "Failed to load data. Please check your connection."
       );
     }
@@ -45,23 +47,23 @@ const Home = () => {
 
   const quickAccessItems = [
     {
-      title: "Soil Health",
+      title: t("home.soilAnalysis"),
       icon: "leaf",
-      description: "Test your soil",
+      description: t("soilHealth.testSoil"),
       route: "/soil-health",
       color: "#22C55E",
     },
     {
-      title: "Pest Detection",
+      title: t("home.pestDetection"),
       icon: "camera",
-      description: "Scan crop diseases",
+      description: t("pestDetection.detectPest"),
       route: "/pest-detection",
       color: "#EF4444",
     },
     {
-      title: "Market Prices",
+      title: t("home.marketPrices"),
       icon: "trending-up",
-      description: "Check crop prices",
+      description: t("marketPrices.searchCrop"),
       route: "/market-prices",
       color: "#3B82F6",
     },
@@ -80,9 +82,14 @@ const Home = () => {
           <TouchableOpacity>
             <Ionicons name="menu" size={24} color="white" />
           </TouchableOpacity>
-          <Text className="text-xl font-bold text-white">Kisan Setu</Text>
+          <Text className="text-xl font-bold text-white">
+            {t("welcome.title").split(" ")[0]}{" "}
+            {t("welcome.title").split(" ")[1]}
+          </Text>
           <TouchableOpacity
-            onPress={() => Alert.alert("Notifications", "No new notifications")}
+            onPress={() =>
+              Alert.alert(t("settings.notifications"), "No new notifications")
+            }
           >
             <Ionicons name="notifications" size={24} color="white" />
           </TouchableOpacity>
@@ -102,14 +109,16 @@ const Home = () => {
         <View className="bg-gray-800 rounded-xl flex-row items-center px-4 py-3">
           <Ionicons name="search" size={20} color="#9CA3AF" />
           <Text className="text-gray-400 ml-3 flex-1">
-            Search for crops, diseases...
+            {t("advisory.searchPlaceholder")}
           </Text>
         </View>
       </View>
 
       {/* Quick Access */}
       <View className="mx-4 mb-6">
-        <Text className="text-xl font-bold text-white mb-4">Quick Access</Text>
+        <Text className="text-xl font-bold text-white mb-4">
+          {t("home.quickActions")}
+        </Text>
         <View className="flex-row justify-between">
           {quickAccessItems.map((item, index) => (
             <TouchableOpacity
@@ -133,11 +142,15 @@ const Home = () => {
 
       {/* Comprehensive Weather */}
       <View className="mx-4 mb-6">
-        <Text className="text-xl font-bold text-white mb-4">Weather</Text>
+        <Text className="text-xl font-bold text-white mb-4">
+          {t("weather.title")}
+        </Text>
 
         {/* Current Conditions - Enhanced */}
         <View className="bg-gray-800 rounded-2xl p-6 border border-gray-700 mb-4">
-          <Text className="text-gray-400 text-sm mb-4">Current Conditions</Text>
+          <Text className="text-gray-400 text-sm mb-4">
+            {t("weather.today")} - {t("home.todaysWeather")}
+          </Text>
 
           {/* Main Temperature and Description */}
           <View className="flex-row items-center justify-between mb-6">
