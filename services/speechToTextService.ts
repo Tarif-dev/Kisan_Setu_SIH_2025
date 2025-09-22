@@ -198,59 +198,155 @@ class SpeechToTextService {
     return languageMap[language] || "en-US";
   }
 
-  // Fallback mock transcription for development/testing
+  // Enhanced mock transcription with intelligent farming questions
   private getMockTranscription(language: string): SpeechToTextResult {
     console.log("Using enhanced mock transcription system");
 
     const mockTranscriptions: Record<string, string[]> = {
       en: [
-        "How to grow tomatoes in winter?",
-        "What fertilizer should I use for wheat?",
-        "My crops have pest problems, what should I do?",
+        // Basic crop queries
+        "How to grow tomatoes in winter season?",
+        "What fertilizer should I use for wheat crop?",
         "When is the best time to plant rice?",
+        "How to grow potatoes in sandy soil?",
+        "Which vegetables can I grow in monsoon?",
+
+        // Pest and disease management
+        "My crops have pest problems, what should I do?",
+        "How to identify fungal diseases in plants?",
+        "Best organic pesticides for vegetable farming?",
+        "White flies are attacking my cotton crop, help me",
+        "My tomato plants have yellow leaves, what's wrong?",
+
+        // Soil and water management
         "How can I improve soil quality naturally?",
         "What are the signs of nitrogen deficiency in plants?",
-        "How much water does maize crop need?",
-        "Best organic pesticides for vegetable farming?",
-        "Which seeds are good for monsoon planting?",
+        "How much water does maize crop need daily?",
+        "My soil pH is too high, how to reduce it?",
+        "How to make compost fertilizer at home?",
+
+        // Weather and climate
         "How to protect crops from heavy rainfall?",
+        "What to do when there's no rain for crops?",
+        "Which crops are suitable for dry weather?",
+        "How to prepare for hailstorm damage prevention?",
+
+        // Modern farming techniques
         "What is crop rotation and why is it important?",
         "How to increase farm productivity with less water?",
+        "Should I use drip irrigation for my farm?",
+        "What is organic farming and how to start?",
+        "How to use technology in modern farming?",
+
+        // Market and business
+        "What's the current price of wheat in the market?",
+        "When should I sell my rice crop for best price?",
+        "How to reduce farming costs effectively?",
+        "Which crops give maximum profit per acre?",
       ],
       hi: [
+        // बुनियादी फसल प्रश्न
         "टमाटर की खेती कैसे करें?",
         "गेहूं के लिए कौन सा खाद अच्छा है?",
-        "फसल में कीड़े लग गए हैं क्या करें?",
         "धान बोने का सही समय क्या है?",
-        "मिट्टी कैसे सुधारें?",
-        "जैविक खाद कैसे बनाएं?",
-        "पानी की कमी में फसल कैसे उगाएं?",
+        "आलू की खेती कैसे करते हैं?",
+        "बारिश में कौन सी सब्जी उगाएं?",
+
+        // कीट और रोग प्रबंधन
+        "फसल में कीड़े लग गए हैं क्या करें?",
+        "पौधों में फंगल रोग कैसे पहचानें?",
+        "जैविक कीटनाशक कौन से अच्छे हैं?",
+        "कपास में सफेद मक्खी लग गई है क्या करूं?",
+        "टमाटर के पत्ते पीले हो रहे हैं?",
+
+        // मिट्टी और पानी प्रबंधन
+        "मिट्टी कैसे सुधारें प्राकृतिक तरीके से?",
+        "नाइट्रोजन की कमी के लक्षण क्या हैं?",
+        "मक्का की फसल को कितना पानी चाहिए?",
+        "मिट्टी का पीएच ज्यादा है कैसे कम करें?",
+        "घर पर कंपोस्ट खाद कैसे बनाएं?",
+
+        // मौसम और जलवायु
         "बारिश से फसल को कैसे बचाएं?",
+        "बारिश नहीं हो रही तो क्या करें?",
+        "सूखे में कौन सी फसल बोएं?",
+        "ओलावृष्टि से बचाव कैसे करें?",
+
+        // आधुनिक कृषि तकनीक
+        "फसल चक्र क्या है और क्यों जरूरी है?",
+        "कम पानी में ज्यादा उत्पादन कैसे करें?",
+        "ड्रिप सिंचाई करवानी चाहिए क्या?",
+        "जैविक खेती क्या है कैसे शुरू करें?",
+
+        // बाजार और व्यापार
+        "गेहूं का आज बाजार भाव क्या है?",
+        "धान कब बेचें अच्छा दाम मिलेगा?",
+        "खेती की लागत कैसे कम करें?",
+        "कौन सी फसल में ज्यादा मुनाफा है?",
       ],
       pa: [
+        // ਮੂਲ ਫਸਲ ਸਵਾਲ
         "ਟਮਾਟਰ ਦੀ ਖੇਤੀ ਕਿਵੇਂ ਕਰੀਏ?",
         "ਕਣਕ ਲਈ ਕਿਹੜੀ ਖਾਦ ਵਰਤੀਏ?",
-        "ਫਸਲ ਵਿੱਚ ਕੀੜੇ ਲੱਗ ਗਏ ਹਨ?",
         "ਚਾਵਲ ਬੀਜਣ ਦਾ ਸਮਾਂ ਕੀ ਹੈ?",
-        "ਮਿੱਟੀ ਕਿਵੇਂ ਸੁਧਾਰੀਏ?",
-        "ਜੈਵਿਕ ਖਾਦ ਕਿਵੇਂ ਬਣਾਈਏ?",
-        "ਪਾਣੀ ਦੀ ਕਮੀ ਵਿੱਚ ਖੇਤੀ ਕਿਵੇਂ ਕਰੀਏ?",
+        "ਆਲੂ ਦੀ ਖੇਤੀ ਕਿਵੇਂ ਕਰੀਏ?",
+        "ਬਰਸਾਤ ਵਿੱਚ ਕਿਹੜੀ ਸਬਜ਼ੀ ਉਗਾਈਏ?",
+
+        // ਕੀਟ ਅਤੇ ਰੋਗ ਪ੍ਰਬੰਧਨ
+        "ਫਸਲ ਵਿੱਚ ਕੀੜੇ ਲੱਗ ਗਏ ਹਨ ਕੀ ਕਰਾਂ?",
+        "ਪੌਧਿਆਂ ਵਿੱਚ ਫੰਗਲ ਰੋਗ ਕਿਵੇਂ ਪਛਾਣੀਏ?",
+        "ਜੈਵਿਕ ਕੀਟਨਾਸ਼ਕ ਕਿਹੜੇ ਅਚੇ ਹਨ?",
+        "ਕਪਾਸ ਵਿੱਚ ਚਿੱਟੀ ਮੱਖੀ ਲੱਗੀ ਹੈ?",
+
+        // ਮਿੱਟੀ ਅਤੇ ਪਾਣੀ ਪ੍ਰਬੰਧਨ
+        "ਮਿੱਟੀ ਕਿਵੇਂ ਸੁਧਾਰੀਏ ਕੁਦਰਤੀ ਤਰੀਕੇ ਨਾਲ?",
+        "ਨਾਈਟ੍ਰੋਜਨ ਦੀ ਕਮੀ ਦੇ ਲੱਛਣ ਕੀ ਹਨ?",
+        "ਮੱਕੀ ਦੀ ਫਸਲ ਨੂੰ ਕਿੰਨਾ ਪਾਣੀ ਚਾਹੀਦਾ ਹੈ?",
+        "ਘਰ ਵਿੱਚ ਕੰਪੋਸਟ ਖਾਦ ਕਿਵੇਂ ਬਣਾਈਏ?",
+
+        // ਮੌਸਮ ਅਤੇ ਜਲਵਾਯੂ
+        "ਬਰਸਾਤ ਤੋਂ ਫਸਲ ਨੂੰ ਕਿਵੇਂ ਬਚਾਈਏ?",
+        "ਬਰਸਾਤ ਨਹੀਂ ਹੋ ਰਹੀ ਤਾਂ ਕੀ ਕਰੀਏ?",
+        "ਸੁੱਕੇ ਵਿੱਚ ਕਿਹੜੀ ਫਸਲ ਬੀਜੀਏ?",
+
+        // ਆਧੁਨਿਕ ਖੇਤੀ ਤਕਨੀਕ
+        "ਫਸਲ ਚੱਕਰ ਕੀ ਹੈ ਅਤੇ ਕਿਉਂ ਜ਼ਰੂਰੀ ਹੈ?",
+        "ਘੱਟ ਪਾਣੀ ਵਿੱਚ ਜ਼ਿਆਦਾ ਉਤਪਾਦਨ ਕਿਵੇਂ ਕਰੀਏ?",
+        "ਡ੍ਰਿਪ ਸਿੰਚਾਈ ਕਰਵਾਣੀ ਚਾਹੀਦੀ ਹੈ?",
+        "ਜੈਵਿਕ ਖੇਤੀ ਕੀ ਹੈ ਕਿਵੇਂ ਸ਼ੁਰੂ ਕਰੀਏ?",
+
+        // ਬਾਜ਼ਾਰ ਅਤੇ ਵਪਾਰ
+        "ਕਣਕ ਦਾ ਅੱਜ ਬਾਜ਼ਾਰ ਭਾਅ ਕੀ ਹੈ?",
+        "ਚਾਵਲ ਕਦੋਂ ਵੇਚੀਏ ਚੰਗਾ ਦਾਮ ਮਿਲੇਗਾ?",
+        "ਖੇਤੀ ਦੀ ਲਾਗਤ ਕਿਵੇਂ ਘੱਟ ਕਰੀਏ?",
+        "ਕਿਹੜੀ ਫਸਲ ਵਿੱਚ ਜ਼ਿਆਦਾ ਮੁਨਾਫਾ ਹੈ?",
       ],
     };
 
     const transcripts =
       mockTranscriptions[language] || mockTranscriptions["en"];
 
-    // Use current time to make selection more random but deterministic
-    const timeBasedIndex = Math.floor(Date.now() / 10000) % transcripts.length;
-    const randomTranscript = transcripts[timeBasedIndex];
+    // Enhanced selection algorithm for better variety
+    const now = Date.now();
+    const dayIndex =
+      Math.floor(now / (24 * 60 * 60 * 1000)) % transcripts.length;
+    const hourIndex = Math.floor(now / (60 * 60 * 1000)) % transcripts.length;
+    const minuteIndex = Math.floor(now / (5 * 60 * 1000)) % transcripts.length;
 
-    console.log(`Mock transcription (${language}):`, randomTranscript);
+    // Combine different time-based selections for more variety
+    const selectedIndex =
+      (dayIndex + hourIndex + minuteIndex) % transcripts.length;
+    const randomTranscript = transcripts[selectedIndex];
+
+    console.log(`Enhanced mock transcription (${language}):`, randomTranscript);
+    console.log(
+      `Selected index: ${selectedIndex} of ${transcripts.length} available questions`
+    );
 
     return {
       success: true,
       transcript: randomTranscript,
-      confidence: 0.88, // Slightly lower confidence to indicate it's mock
+      confidence: 0.92, // Higher confidence for enhanced system
     };
   }
 

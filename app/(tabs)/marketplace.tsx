@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 interface Product {
   id: string;
@@ -41,6 +42,7 @@ interface Category {
 }
 
 const Marketplace = () => {
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
@@ -48,23 +50,48 @@ const Marketplace = () => {
   const [cartItems, setCartItems] = useState<{ [key: string]: number }>({});
 
   const categories: Category[] = [
-    { id: "all", name: "All", icon: "grid", color: "#3B82F6" },
-    { id: "vegetables", name: "Vegetables", icon: "leaf", color: "#10B981" },
-    { id: "fruits", name: "Fruits", icon: "nutrition", color: "#F59E0B" },
-    { id: "grains", name: "Grains", icon: "restaurant", color: "#8B5CF6" },
-    { id: "dairy", name: "Dairy", icon: "water", color: "#06B6D4" },
-    { id: "organic", name: "Organic", icon: "flower", color: "#84CC16" },
+    { id: "all", name: t("marketplace.all"), icon: "grid", color: "#3B82F6" },
+    {
+      id: "vegetables",
+      name: t("marketplace.vegetables"),
+      icon: "leaf",
+      color: "#10B981",
+    },
+    {
+      id: "fruits",
+      name: t("marketplace.fruits"),
+      icon: "nutrition",
+      color: "#F59E0B",
+    },
+    {
+      id: "grains",
+      name: t("marketplace.grains"),
+      icon: "restaurant",
+      color: "#8B5CF6",
+    },
+    {
+      id: "dairy",
+      name: t("marketplace.dairy"),
+      icon: "water",
+      color: "#06B6D4",
+    },
+    {
+      id: "organic",
+      name: t("marketplace.organic"),
+      icon: "flower",
+      color: "#84CC16",
+    },
   ];
 
   const products: Product[] = [
     {
       id: "1",
-      name: "Fresh Tomatoes",
+      name: t("marketplace.products.freshTomatoes.name"),
       price: 45,
-      unit: "kg",
+      unit: t("marketplace.units.kg"),
       farmer: {
-        name: "Rajesh Kumar",
-        location: "Haryana, India",
+        name: t("marketplace.farmers.rajeshKumar"),
+        location: t("marketplace.locations.haryana"),
         rating: 4.8,
         image:
           "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
@@ -72,21 +99,23 @@ const Marketplace = () => {
       image:
         "https://images.unsplash.com/photo-1546094096-0df4bcaaa337?w=300&h=200&fit=crop",
       category: "vegetables",
-      description:
-        "Fresh, organically grown tomatoes harvested this morning. Rich in vitamins and perfect for cooking.",
+      description: t("marketplace.products.freshTomatoes.description"),
       quantity: 50,
-      certification: ["Organic", "FSSAI"],
-      freshness: "Harvested Today",
+      certification: [
+        t("marketplace.certifications.organic"),
+        t("marketplace.certifications.fssai"),
+      ],
+      freshness: t("marketplace.freshnessTypes.harvestedToday"),
       harvestDate: "2025-09-13",
     },
     {
       id: "2",
-      name: "Basmati Rice",
+      name: t("marketplace.products.basmatiRice.name"),
       price: 120,
-      unit: "kg",
+      unit: t("marketplace.units.kg"),
       farmer: {
-        name: "Priya Singh",
-        location: "Punjab, India",
+        name: t("marketplace.farmers.priyaSingh"),
+        location: t("marketplace.locations.punjab"),
         rating: 4.9,
         image:
           "https://images.unsplash.com/photo-1494790108755-2616b612b8b5?w=100&h=100&fit=crop&crop=face",
@@ -94,21 +123,23 @@ const Marketplace = () => {
       image:
         "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300&h=200&fit=crop",
       category: "grains",
-      description:
-        "Premium quality Basmati rice with authentic aroma and long grains. Grown using traditional methods.",
+      description: t("marketplace.products.basmatiRice.description"),
       quantity: 100,
-      certification: ["Premium Grade", "Export Quality"],
-      freshness: "Fresh Stock",
+      certification: [
+        t("marketplace.certifications.premiumGrade"),
+        t("marketplace.certifications.exportQuality"),
+      ],
+      freshness: t("marketplace.freshnessTypes.freshStock"),
       harvestDate: "2025-08-25",
     },
     {
       id: "3",
-      name: "Fresh Mangoes",
+      name: t("marketplace.products.freshMangoes.name"),
       price: 80,
-      unit: "kg",
+      unit: t("marketplace.units.kg"),
       farmer: {
-        name: "Suresh Patel",
-        location: "Gujarat, India",
+        name: t("marketplace.farmers.sureshPatel"),
+        location: t("marketplace.locations.gujarat"),
         rating: 4.7,
         image:
           "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
@@ -116,21 +147,23 @@ const Marketplace = () => {
       image:
         "https://images.unsplash.com/photo-1553279745-f28ffbfe2de7?w=300&h=200&fit=crop",
       category: "fruits",
-      description:
-        "Sweet and juicy Alphonso mangoes, the king of fruits. Perfectly ripened and ready to eat.",
+      description: t("marketplace.products.freshMangoes.description"),
       quantity: 30,
-      certification: ["Organic", "Premium"],
-      freshness: "Tree Fresh",
+      certification: [
+        t("marketplace.certifications.organic"),
+        t("marketplace.certifications.premium"),
+      ],
+      freshness: t("marketplace.freshnessTypes.treeFresh"),
       harvestDate: "2025-09-10",
     },
     {
       id: "4",
-      name: "Farm Fresh Milk",
+      name: t("marketplace.products.farmFreshMilk.name"),
       price: 65,
-      unit: "liter",
+      unit: t("marketplace.units.liter"),
       farmer: {
-        name: "Mohit Sharma",
-        location: "Rajasthan, India",
+        name: t("marketplace.farmers.mohitSharma"),
+        location: t("marketplace.locations.rajasthan"),
         rating: 4.6,
         image:
           "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop&crop=face",
@@ -138,21 +171,23 @@ const Marketplace = () => {
       image:
         "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=300&h=200&fit=crop",
       category: "dairy",
-      description:
-        "Pure cow milk from grass-fed cows. Rich in nutrients and delivered fresh daily.",
+      description: t("marketplace.products.farmFreshMilk.description"),
       quantity: 20,
-      certification: ["FSSAI", "Pasteurized"],
-      freshness: "Daily Fresh",
+      certification: [
+        t("marketplace.certifications.fssai"),
+        t("marketplace.certifications.pasteurized"),
+      ],
+      freshness: t("marketplace.freshnessTypes.dailyFresh"),
       harvestDate: "2025-09-13",
     },
     {
       id: "5",
-      name: "Organic Spinach",
+      name: t("marketplace.products.organicSpinach.name"),
       price: 25,
-      unit: "bunch",
+      unit: t("marketplace.units.bunch"),
       farmer: {
-        name: "Anita Devi",
-        location: "Uttar Pradesh, India",
+        name: t("marketplace.farmers.anitaDevi"),
+        location: t("marketplace.locations.uttarPradesh"),
         rating: 4.8,
         image:
           "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
@@ -160,21 +195,23 @@ const Marketplace = () => {
       image:
         "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=300&h=200&fit=crop",
       category: "vegetables",
-      description:
-        "Fresh organic spinach leaves, pesticide-free and rich in iron. Perfect for healthy meals.",
+      description: t("marketplace.products.organicSpinach.description"),
       quantity: 40,
-      certification: ["Organic", "Pesticide-Free"],
-      freshness: "Morning Fresh",
+      certification: [
+        t("marketplace.certifications.organic"),
+        t("marketplace.certifications.pesticideFree"),
+      ],
+      freshness: t("marketplace.freshnessTypes.morningFresh"),
       harvestDate: "2025-09-13",
     },
     {
       id: "6",
-      name: "Wheat Flour",
+      name: t("marketplace.products.wheatFlour.name"),
       price: 55,
-      unit: "kg",
+      unit: t("marketplace.units.kg"),
       farmer: {
-        name: "Vikram Singh",
-        location: "Madhya Pradesh, India",
+        name: t("marketplace.farmers.vikramSingh"),
+        location: t("marketplace.locations.madhyaPradesh"),
         rating: 4.5,
         image:
           "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=100&h=100&fit=crop&crop=face",
@@ -182,11 +219,13 @@ const Marketplace = () => {
       image:
         "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=300&h=200&fit=crop",
       category: "grains",
-      description:
-        "Stone-ground whole wheat flour from organically grown wheat. No preservatives added.",
+      description: t("marketplace.products.wheatFlour.description"),
       quantity: 80,
-      certification: ["Organic", "Stone Ground"],
-      freshness: "Fresh Ground",
+      certification: [
+        t("marketplace.certifications.organic"),
+        t("marketplace.certifications.stoneGround"),
+      ],
+      freshness: t("marketplace.freshnessTypes.freshGround"),
       harvestDate: "2025-09-01",
     },
   ];
@@ -205,21 +244,24 @@ const Marketplace = () => {
       ...prev,
       [productId]: (prev[productId] || 0) + 1,
     }));
-    Alert.alert("Added to Cart", "Product added to your cart successfully!");
+    Alert.alert(
+      t("marketplace.alerts.addedToCart"),
+      t("marketplace.alerts.productAdded")
+    );
   };
 
   const buyNow = (product: Product) => {
     Alert.alert(
-      "ONDC Order",
-      `Proceed to buy ${product.name} from ${product.farmer.name}?\n\nPrice: ₹${product.price}/${product.unit}`,
+      t("marketplace.alerts.ondcOrder"),
+      `${t("marketplace.alerts.proceedToBuy")} ${product.name} ${t("marketplace.alerts.from")} ${product.farmer.name}?\n\n${t("marketplace.alerts.price")}: ₹${product.price}/${product.unit}`,
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("marketplace.alerts.cancel"), style: "cancel" },
         {
-          text: "Proceed",
+          text: t("marketplace.alerts.proceed"),
           onPress: () => {
             Alert.alert(
-              "Order Placed",
-              "Your order has been placed through ONDC network. You will receive updates shortly."
+              t("marketplace.alerts.orderPlaced"),
+              t("marketplace.alerts.orderSuccess")
             );
           },
         },
@@ -229,19 +271,26 @@ const Marketplace = () => {
 
   const contactFarmer = (farmer: any) => {
     Alert.alert(
-      "Contact Farmer",
-      `Connect with ${farmer.name} from ${farmer.location}`,
+      t("marketplace.alerts.contactFarmer"),
+      `${t("marketplace.alerts.connectWith")} ${farmer.name} ${t("marketplace.alerts.from")} ${farmer.location}`,
       [
         {
-          text: "Call",
-          onPress: () => Alert.alert("Calling", `Calling ${farmer.name}...`),
+          text: t("marketplace.alerts.call"),
+          onPress: () =>
+            Alert.alert(
+              t("marketplace.alerts.calling"),
+              `${t("marketplace.alerts.calling")} ${farmer.name}...`
+            ),
         },
         {
-          text: "Message",
+          text: t("marketplace.alerts.message"),
           onPress: () =>
-            Alert.alert("Message", `Opening chat with ${farmer.name}...`),
+            Alert.alert(
+              t("marketplace.alerts.message"),
+              `${t("marketplace.alerts.openingChat")} ${farmer.name}...`
+            ),
         },
-        { text: "Cancel", style: "cancel" },
+        { text: t("marketplace.alerts.cancel"), style: "cancel" },
       ]
     );
   };
@@ -325,7 +374,7 @@ const Marketplace = () => {
       <View className="pt-12 pb-4 px-4 bg-gray-900">
         <View className="flex-row items-center justify-between mb-4">
           <Text className="text-2xl font-bold text-white">
-            ONDC Marketplace
+            {t("marketplace.title")}
           </Text>
           <View className="flex-row items-center">
             <TouchableOpacity
@@ -362,10 +411,10 @@ const Marketplace = () => {
             <Ionicons name="globe" size={20} color="#3B82F6" />
             <View className="ml-3 flex-1">
               <Text className="text-blue-400 font-semibold">
-                Powered by ONDC
+                {t("marketplace.ondcBadge.poweredBy")}
               </Text>
               <Text className="text-gray-300 text-sm">
-                Direct from farmers to your doorstep
+                {t("marketplace.ondcBadge.directFrom")}
               </Text>
             </View>
           </View>
@@ -376,17 +425,19 @@ const Marketplace = () => {
           <View className="flex-row items-center justify-between">
             <View className="flex-1">
               <Text className="text-green-400 font-semibold">
-                Are you a farmer?
+                {t("marketplace.farmerCta.question")}
               </Text>
               <Text className="text-gray-300 text-sm">
-                Join our marketplace and sell directly to customers
+                {t("marketplace.farmerCta.description")}
               </Text>
             </View>
             <TouchableOpacity
               onPress={() => router.push("/farmer-onboarding")}
               className="bg-green-500 rounded-lg px-4 py-2"
             >
-              <Text className="text-white font-medium">Join Now</Text>
+              <Text className="text-white font-medium">
+                {t("marketplace.farmerCta.joinButton")}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -397,7 +448,7 @@ const Marketplace = () => {
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Search fresh produce..."
+            placeholder={t("marketplace.searchProducts")}
             placeholderTextColor="#9CA3AF"
             className="text-white ml-3 flex-1"
           />

@@ -2,7 +2,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export interface Translation {
-  [key: string]: string | Translation | string[];
+  [key: string]: string | Translation | string[] | Translation[];
 }
 
 export interface Translations {
@@ -97,7 +97,70 @@ const translations: Translations = {
     },
     advisory: {
       title: "Agricultural Advisory",
+      subtitle: "Personalized farming recommendations",
       searchPlaceholder: "Search for farming advice...",
+      currentConditions: "Current Conditions",
+      location: "Location",
+      currentLocation: "Current Location",
+      temperature: "Temperature",
+      humidity: "Humidity",
+      highPriority: "High Priority",
+      mediumPriority: "Medium Priority",
+      lowPriority: "Low Priority",
+      todaysRecommendations: "Today's Recommendations",
+      actionItems: "Action Items",
+      weatherAlert: "Weather Alert",
+      weatherAlertDescription:
+        "Heavy rainfall expected tomorrow. Prepare for potential waterlogging in low-lying areas. Postpone any planned fertilizer application until after the rain.",
+      farmingTip: "Farming Tip",
+      farmingTipDescription:
+        "Regularly monitor your crops for early signs of pest and disease problems. Early detection and treatment can prevent major crop losses and reduce treatment costs.",
+      advisoryCards: {
+        wheatDisease: {
+          title: "Wheat Disease Warning",
+          description:
+            "High risk of fungal diseases due to recent rainfall and humid conditions.",
+          actionItems: [
+            "Apply fungicide within 48 hours",
+            "Inspect crops daily for early symptoms",
+            "Ensure proper field drainage",
+            "Remove infected plant debris",
+          ],
+        },
+        irrigation: {
+          title: "Optimal Irrigation Time",
+          description:
+            "Current soil moisture levels suggest irrigation is needed for better crop yield.",
+          actionItems: [
+            "Irrigate during early morning hours",
+            "Check soil moisture at 6-inch depth",
+            "Apply 2-3 inches of water per session",
+            "Monitor weather forecast before irrigation",
+          ],
+        },
+        harvest: {
+          title: "Harvest Recommendation",
+          description:
+            "Rice crops in your area are ready for harvest based on maturity indicators.",
+          actionItems: [
+            "Begin harvest within next 5-7 days",
+            "Check grain moisture content",
+            "Prepare storage facilities",
+            "Arrange transportation for harvested crops",
+          ],
+        },
+        fertilizer: {
+          title: "Fertilizer Application",
+          description:
+            "Second dose of fertilizer application is due for corn crops.",
+          actionItems: [
+            "Apply NPK fertilizer in 4:2:1 ratio",
+            "Water thoroughly after application",
+            "Apply during cooler parts of the day",
+            "Monitor crop response after 7 days",
+          ],
+        },
+      },
       categories: {
         irrigation: "Irrigation",
         fertilizers: "Fertilizers",
@@ -141,6 +204,124 @@ const translations: Translations = {
       quantity: "Quantity",
       inStock: "In Stock",
       outOfStock: "Out of Stock",
+      all: "All",
+      vegetables: "Vegetables",
+      fruits: "Fruits",
+      grains: "Grains",
+      dairy: "Dairy",
+      organic: "Organic",
+      freshness: "Freshness",
+      harvestedToday: "Harvested Today",
+      certification: "Certification",
+      farmer: "Farmer",
+      location: "Location",
+      rating: "Rating",
+      description: "Description",
+      viewDetails: "View Details",
+      addedToCart: "Added to Cart",
+      viewCart: "View Cart",
+      checkout: "Checkout",
+      totalItems: "Total Items",
+      subtotal: "Subtotal",
+      ondcBadge: {
+        poweredBy: "Powered by ONDC",
+        directFrom: "Direct from farmers to your doorstep",
+      },
+      farmerCta: {
+        question: "Are you a farmer?",
+        description: "Join our marketplace and sell directly to customers",
+        joinButton: "Join Now",
+      },
+      alerts: {
+        addedToCart: "Added to Cart",
+        productAdded: "Product added to your cart successfully!",
+        ondcOrder: "ONDC Order",
+        proceedToBuy: "Proceed to buy",
+        from: "from",
+        price: "Price",
+        cancel: "Cancel",
+        proceed: "Proceed",
+        orderPlaced: "Order Placed",
+        orderSuccess:
+          "Your order has been placed through ONDC network. You will receive updates shortly.",
+        contactFarmer: "Contact Farmer",
+        connectWith: "Connect with",
+        call: "Call",
+        calling: "Calling",
+        message: "Message",
+        openingChat: "Opening chat with",
+      },
+      products: {
+        freshTomatoes: {
+          name: "Fresh Tomatoes",
+          description:
+            "Fresh, organically grown tomatoes harvested this morning. Rich in vitamins and perfect for cooking.",
+        },
+        basmatiRice: {
+          name: "Basmati Rice",
+          description:
+            "Premium quality Basmati rice with authentic aroma and long grains. Grown using traditional methods.",
+        },
+        freshMangoes: {
+          name: "Fresh Mangoes",
+          description:
+            "Sweet and juicy Alphonso mangoes, the king of fruits. Perfectly ripened and ready to eat.",
+        },
+        farmFreshMilk: {
+          name: "Farm Fresh Milk",
+          description:
+            "Pure cow milk from grass-fed cows. Rich in nutrients and delivered fresh daily.",
+        },
+        organicSpinach: {
+          name: "Organic Spinach",
+          description:
+            "Fresh organic spinach leaves, pesticide-free and rich in iron. Perfect for healthy meals.",
+        },
+        wheatFlour: {
+          name: "Wheat Flour",
+          description:
+            "Stone-ground whole wheat flour from organically grown wheat. No preservatives added.",
+        },
+      },
+      farmers: {
+        rajeshKumar: "Rajesh Kumar",
+        priyaSingh: "Priya Singh",
+        sureshPatel: "Suresh Patel",
+        mohitSharma: "Mohit Sharma",
+        anitaDevi: "Anita Devi",
+        vikramSingh: "Vikram Singh",
+      },
+      locations: {
+        haryana: "Haryana, India",
+        punjab: "Punjab, India",
+        gujarat: "Gujarat, India",
+        rajasthan: "Rajasthan, India",
+        uttarPradesh: "Uttar Pradesh, India",
+        madhyaPradesh: "Madhya Pradesh, India",
+      },
+      certifications: {
+        organic: "Organic",
+        fssai: "FSSAI",
+        premiumGrade: "Premium Grade",
+        exportQuality: "Export Quality",
+        premium: "Premium",
+        pasteurized: "Pasteurized",
+        pesticideFree: "Pesticide-Free",
+        stoneGround: "Stone Ground",
+      },
+      freshnessTypes: {
+        harvestedToday: "Harvested Today",
+        freshStock: "Fresh Stock",
+        treeFresh: "Tree Fresh",
+        dailyFresh: "Daily Fresh",
+        morningFresh: "Morning Fresh",
+        freshGround: "Fresh Ground",
+      },
+      units: {
+        kg: "kg",
+        liter: "liter",
+        bunch: "bunch",
+      },
     },
     settings: {
       title: "Settings",
@@ -150,6 +331,12 @@ const translations: Translations = {
       privacy: "Privacy",
       about: "About",
       logout: "Logout",
+      accessibility: "Accessibility",
+      voiceSupport: "Voice Support",
+      feedback: "Feedback",
+      reportIssue: "Report an Issue",
+      provideFeedback: "Provide Feedback",
+      currentLocation: "Current location: Farmville",
       languageSelection: {
         title: "Select Language",
         subtitle: "Choose your preferred language",
@@ -168,6 +355,9 @@ const translations: Translations = {
       temperature: "Temperature",
       humidity: "Humidity",
       windSpeed: "Wind Speed",
+      wind: "Wind",
+      visibility: "Visibility",
+      pressure: "Pressure",
       precipitation: "Precipitation",
       uvIndex: "UV Index",
       sunrise: "Sunrise",
@@ -175,6 +365,16 @@ const translations: Translations = {
       today: "Today",
       tomorrow: "Tomorrow",
       weekly: "Weekly Forecast",
+      feelsLike: "Feels like",
+      weatherAlert: "Weather Alert",
+      weatherAlertText:
+        "Heavy rainfall expected tomorrow. Prepare for waterlogging.",
+      sevenDayForecast: "7-Day Forecast",
+      partlyCloudy: "Partly Cloudy",
+      heavyRain: "Heavy Rain",
+      cloudy: "Cloudy",
+      sunny: "Sunny",
+      lightRain: "Light Rain",
     },
     soilHealth: {
       title: "Soil Health Analysis",
@@ -279,7 +479,69 @@ const translations: Translations = {
     },
     advisory: {
       title: "कृषि सलाह",
+      subtitle: "व्यक्तिगत कृषि सिफारिशें",
       searchPlaceholder: "कृषि सलाह खोजें...",
+      currentConditions: "वर्तमान स्थितियां",
+      location: "स्थान",
+      currentLocation: "वर्तमान स्थान",
+      temperature: "तापमान",
+      humidity: "आर्द्रता",
+      highPriority: "उच्च प्राथमिकता",
+      mediumPriority: "मध्यम प्राथमिकता",
+      lowPriority: "कम प्राथमिकता",
+      todaysRecommendations: "आज की सिफारिशें",
+      actionItems: "कार्य आइटम",
+      weatherAlert: "मौसम चेतावनी",
+      weatherAlertDescription:
+        "कल भारी बारिश की उम्मीद है। निचले इलाकों में संभावित जलभराव के लिए तैयार रहें। बारिश के बाद तक किसी भी नियोजित उर्वरक आवेदन को स्थगित करें।",
+      farmingTip: "कृषि सुझाव",
+      farmingTipDescription:
+        "कीट और रोग की समस्याओं के शुरुआती संकेतों के लिए नियमित रूप से अपनी फसलों की निगरानी करें। जल्दी पहचान और उपचार से बड़े फसल नुकसान को रोका जा सकता है और उपचार लागत कम हो सकती है।",
+      advisoryCards: {
+        wheatDisease: {
+          title: "गेहूं रोग चेतावनी",
+          description:
+            "हाल की बारिश और नम स्थितियों के कारण फंगल रोगों का उच्च जोखिम।",
+          actionItems: [
+            "48 घंटों के भीतर फंगीसाइड लगाएं",
+            "शुरुआती लक्षणों के लिए दैनिक फसल निरीक्षण करें",
+            "उचित क्षेत्र जल निकासी सुनिश्चित करें",
+            "संक्रमित पौधों का मलबा हटाएं",
+          ],
+        },
+        irrigation: {
+          title: "इष्टतम सिंचाई समय",
+          description:
+            "वर्तमान मिट्टी की नमी का स्तर बेहतर फसल उपज के लिए सिंचाई की आवश्यकता का संकेत देता है।",
+          actionItems: [
+            "सुबह जल्दी सिंचाई करें",
+            "6 इंच गहराई पर मिट्टी की नमी जांचें",
+            "प्रति सत्र 2-3 इंच पानी लगाएं",
+            "सिंचाई से पहले मौसम पूर्वानुमान की निगरानी करें",
+          ],
+        },
+        harvest: {
+          title: "कटाई की सिफारिश",
+          description:
+            "परिपक्वता संकेतकों के आधार पर आपके क्षेत्र में धान की फसल कटाई के लिए तैयार है।",
+          actionItems: [
+            "अगले 5-7 दिनों के भीतर कटाई शुरू करें",
+            "अनाज की नमी सामग्री जांचें",
+            "भंडारण सुविधाएं तैयार करें",
+            "कटी फसल के लिए परिवहन की व्यवस्था करें",
+          ],
+        },
+        fertilizer: {
+          title: "उर्वरक आवेदन",
+          description: "मक्का की फसल के लिए उर्वरक की दूसरी खुराक का समय है।",
+          actionItems: [
+            "4:2:1 अनुपात में NPK उर्वरक लगाएं",
+            "आवेदन के बाद अच्छी तरह पानी दें",
+            "दिन के ठंडे हिस्सों में लगाएं",
+            "7 दिन बाद फसल प्रतिक्रिया की निगरानी करें",
+          ],
+        },
+      },
       categories: {
         irrigation: "सिंचाई",
         fertilizers: "उर्वरक",
@@ -323,6 +585,124 @@ const translations: Translations = {
       quantity: "मात्रा",
       inStock: "स्टॉक में",
       outOfStock: "स्टॉक में नहीं",
+      all: "सभी",
+      vegetables: "सब्जियां",
+      fruits: "फल",
+      grains: "अनाज",
+      dairy: "डेयरी",
+      organic: "जैविक",
+      freshness: "ताजगी",
+      harvestedToday: "आज काटा गया",
+      certification: "प्रमाणन",
+      farmer: "किसान",
+      location: "स्थान",
+      rating: "रेटिंग",
+      description: "विवरण",
+      viewDetails: "विवरण देखें",
+      addedToCart: "कार्ट में जोड़ा गया",
+      viewCart: "कार्ट देखें",
+      checkout: "चेकआउट",
+      totalItems: "कुल आइटम",
+      subtotal: "उप-योग",
+      ondcBadge: {
+        poweredBy: "ONDC द्वारा संचालित",
+        directFrom: "किसानों से सीधे आपके दरवाजे तक",
+      },
+      farmerCta: {
+        question: "क्या आप एक किसान हैं?",
+        description: "हमारे बाजार में शामिल हों और ग्राहकों को सीधे बेचें",
+        joinButton: "अभी शामिल हों",
+      },
+      alerts: {
+        addedToCart: "कार्ट में जोड़ा गया",
+        productAdded: "उत्पाद सफलतापूर्वक आपके कार्ट में जोड़ा गया!",
+        ondcOrder: "ONDC ऑर्डर",
+        proceedToBuy: "खरीदने के लिए आगे बढ़ें",
+        from: "से",
+        price: "कीमत",
+        cancel: "रद्द करें",
+        proceed: "आगे बढ़ें",
+        orderPlaced: "ऑर्डर दिया गया",
+        orderSuccess:
+          "आपका ऑर्डर ONDC नेटवर्क के माध्यम से दिया गया है। आपको जल्द ही अपडेट मिलेंगे।",
+        contactFarmer: "किसान से संपर्क करें",
+        connectWith: "के साथ संपर्क करें",
+        call: "कॉल करें",
+        calling: "कॉल कर रहे हैं",
+        message: "संदेश",
+        openingChat: "के साथ चैट खोल रहे हैं",
+      },
+      products: {
+        freshTomatoes: {
+          name: "ताजे टमाटर",
+          description:
+            "आज सुबह काटे गए ताजे, जैविक रूप से उगाए गए टमाटर। विटामिन से भरपूर और खाना पकाने के लिए एकदम सही।",
+        },
+        basmatiRice: {
+          name: "बासमती चावल",
+          description:
+            "प्रामाणिक सुगंध और लंबे दाने वाला प्रीमियम गुणवत्ता का बासमती चावल। पारंपरिक तरीकों से उगाया गया।",
+        },
+        freshMangoes: {
+          name: "ताजे आम",
+          description:
+            "मीठे और रसीले अल्फांसो आम, फलों के राजा। पूरी तरह पके हुए और खाने के लिए तैयार।",
+        },
+        farmFreshMilk: {
+          name: "फार्म फ्रेश दूध",
+          description:
+            "घास खाने वाली गायों का शुद्ध दूध। पोषक तत्वों से भरपूर और प्रतिदिन ताजा पहुंचाया जाता है।",
+        },
+        organicSpinach: {
+          name: "जैविक पालक",
+          description:
+            "ताजे जैविक पालक के पत्ते, कीटनाशक मुक्त और आयरन से भरपूर। स्वस्थ भोजन के लिए एकदम सही।",
+        },
+        wheatFlour: {
+          name: "गेहूं का आटा",
+          description:
+            "जैविक रूप से उगाए गए गेहूं से पत्थर पर पिसा हुआ साबुत गेहूं का आटा। कोई परिरक्षक नहीं मिलाया गया।",
+        },
+      },
+      farmers: {
+        rajeshKumar: "राजेश कुमार",
+        priyaSingh: "प्रिया सिंह",
+        sureshPatel: "सुरेश पटेल",
+        mohitSharma: "मोहित शर्मा",
+        anitaDevi: "अनीता देवी",
+        vikramSingh: "विक्रम सिंह",
+      },
+      locations: {
+        haryana: "हरियाणा, भारत",
+        punjab: "पंजाब, भारत",
+        gujarat: "गुजरात, भारत",
+        rajasthan: "राजस्थान, भारत",
+        uttarPradesh: "उत्तर प्रदेश, भारत",
+        madhyaPradesh: "मध्य प्रदेश, भारत",
+      },
+      certifications: {
+        organic: "जैविक",
+        fssai: "FSSAI",
+        premiumGrade: "प्रीमियम ग्रेड",
+        exportQuality: "निर्यात गुणवत्ता",
+        premium: "प्रीमियम",
+        pasteurized: "पाश्चुरीकृत",
+        pesticideFree: "कीटनाशक मुक्त",
+        stoneGround: "पत्थर पर पिसा",
+      },
+      freshnessTypes: {
+        harvestedToday: "आज काटा गया",
+        freshStock: "ताजा स्टॉक",
+        treeFresh: "पेड़ से ताजा",
+        dailyFresh: "दैनिक ताजा",
+        morningFresh: "सुबह का ताजा",
+        freshGround: "ताजा पिसा हुआ",
+      },
+      units: {
+        kg: "किलो",
+        liter: "लीटर",
+        bunch: "गुच्छा",
+      },
     },
     settings: {
       title: "सेटिंग्स",
@@ -332,6 +712,12 @@ const translations: Translations = {
       privacy: "गोपनीयता",
       about: "के बारे में",
       logout: "लॉग आउट",
+      accessibility: "सुलभता",
+      voiceSupport: "आवाज सहायता",
+      feedback: "प्रतिक्रिया",
+      reportIssue: "समस्या की रिपोर्ट करें",
+      provideFeedback: "प्रतिक्रिया प्रदान करें",
+      currentLocation: "वर्तमान स्थान: फार्मविले",
       languageSelection: {
         title: "भाषा चुनें",
         subtitle: "अपनी पसंदीदा भाषा चुनें",
@@ -350,6 +736,9 @@ const translations: Translations = {
       temperature: "तापमान",
       humidity: "आर्द्रता",
       windSpeed: "हवा की गति",
+      wind: "हवा",
+      visibility: "दृश्यता",
+      pressure: "दबाव",
       precipitation: "वर्षा",
       uvIndex: "UV सूचकांक",
       sunrise: "सूर्योदय",
@@ -357,6 +746,15 @@ const translations: Translations = {
       today: "आज",
       tomorrow: "कल",
       weekly: "साप्ताहिक पूर्वानुमान",
+      feelsLike: "महसूस होता है",
+      weatherAlert: "मौसम चेतावनी",
+      weatherAlertText: "कल भारी बारिश की उम्मीद है। जलभराव के लिए तैयार रहें।",
+      sevenDayForecast: "7-दिन का पूर्वानुमान",
+      partlyCloudy: "आंशिक बादल",
+      heavyRain: "भारी बारिश",
+      cloudy: "बादल",
+      sunny: "धूप",
+      lightRain: "हल्की बारिश",
     },
     soilHealth: {
       title: "मिट्टी स्वास्थ्य विश्लेषण",
@@ -461,14 +859,76 @@ const translations: Translations = {
     },
     advisory: {
       title: "ਖੇਤੀਬਾੜੀ ਸਲਾਹ",
+      subtitle: "ਵਿਅਕਤਿਗਤ ਖੇਤੀਬਾੜੀ ਸਿਫਾਰਸ਼ਾਂ",
       searchPlaceholder: "ਖੇਤੀਬਾੜੀ ਸਲਾਹ ਖੋਜੋ...",
+      currentConditions: "ਮੌਜੂਦਾ ਸਥਿਤੀਆਂ",
+      location: "ਸਥਾਨ",
+      currentLocation: "ਮੌਜੂਦਾ ਸਥਾਨ",
+      temperature: "ਤਾਪਮਾਨ",
+      humidity: "ਨਮੀ",
+      highPriority: "ਉੱਚ ਤਰਜੀਹ",
+      mediumPriority: "ਮੱਧਮ ਤਰਜੀਹ",
+      lowPriority: "ਘੱਟ ਤਰਜੀਹ",
+      todaysRecommendations: "ਅੱਜ ਦੀਆਂ ਸਿਫਾਰਸ਼ਾਂ",
+      actionItems: "ਕਾਰਵਾਈ ਆਈਟਮਾਂ",
+      weatherAlert: "ਮੌਸਮ ਚੇਤਾਵਨੀ",
+      weatherAlertDescription:
+        "ਕੱਲ੍ਹ ਭਾਰੀ ਬਰਸਾਤ ਦੀ ਉਮੀਦ ਹੈ। ਨੀਵੇਂ ਖੇਤਰਾਂ ਵਿੱਚ ਸੰਭਾਵਿਤ ਜਲ ਜਮਾਅ ਲਈ ਤਿਆਰ ਰਹੋ। ਬਰਸਾਤ ਤੋਂ ਬਾਅਦ ਤੱਕ ਕਿਸੇ ਵੀ ਯੋਜਨਾਬੱਧ ਖਾਦ ਅਪਲੀਕੇਸ਼ਨ ਨੂੰ ਮੁਲਤਵੀ ਕਰੋ।",
+      farmingTip: "ਖੇਤੀਬਾੜੀ ਸੁਝਾਅ",
+      farmingTipDescription:
+        "ਕੀਟ ਅਤੇ ਬਿਮਾਰੀ ਦੀਆਂ ਸਮੱਸਿਆਵਾਂ ਦੇ ਸ਼ੁਰੂਆਤੀ ਸੰਕੇਤਾਂ ਲਈ ਨਿਯਮਿਤ ਤੌਰ 'ਤੇ ਆਪਣੀਆਂ ਫਸਲਾਂ ਦੀ ਨਿਗਰਾਨੀ ਕਰੋ। ਜਲਦੀ ਪਛਾਣ ਅਤੇ ਇਲਾਜ ਵੱਡੇ ਫਸਲ ਨੁਕਸਾਨ ਨੂੰ ਰੋਕ ਸਕਦੇ ਹਨ ਅਤੇ ਇਲਾਜ ਦੀ ਲਾਗਤ ਘਟਾ ਸਕਦੇ ਹਨ।",
+      advisoryCards: {
+        wheatDisease: {
+          title: "ਕਣਕ ਰੋਗ ਚੇਤਾਵਨੀ",
+          description:
+            "ਹਾਲੀਆ ਬਰਸਾਤ ਅਤੇ ਨਮ ਸਥਿਤੀਆਂ ਕਾਰਨ ਫੰਗਲ ਰੋਗਾਂ ਦਾ ਉੱਚ ਜੋਖਮ।",
+          actionItems: [
+            "48 ਘੰਟਿਆਂ ਦੇ ਅੰਦਰ ਫੰਗੀਸਾਈਡ ਲਗਾਓ",
+            "ਸ਼ੁਰੂਆਤੀ ਲੱਛਣਾਂ ਲਈ ਰੋਜ਼ਾਨਾ ਫਸਲਾਂ ਦਾ ਨਿਰੀਖਣ ਕਰੋ",
+            "ਉਚਿਤ ਖੇਤ ਨਿਕਾਸ ਨੂੰ ਯਕੀਨੀ ਬਣਾਓ",
+            "ਸੰਕਰਮਿਤ ਪੌਧਿਆਂ ਦਾ ਮਲਬਾ ਹਟਾਓ",
+          ],
+        },
+        irrigation: {
+          title: "ਸਰਵੋਤਮ ਸਿੰਚਾਈ ਸਮਾਂ",
+          description:
+            "ਮੌਜੂਦਾ ਮਿੱਟੀ ਦੀ ਨਮੀ ਦਾ ਪੱਧਰ ਬਿਹਤਰ ਫਸਲ ਪੈਦਾਵਾਰ ਲਈ ਸਿੰਚਾਈ ਦੀ ਲੋੜ ਦਾ ਸੁਝਾਅ ਦਿੰਦਾ ਹੈ।",
+          actionItems: [
+            "ਸਵੇਰੇ ਜਲਦੀ ਸਿੰਚਾਈ ਕਰੋ",
+            "6 ਇੰਚ ਦੀ ਡੂੰਘਾਈ ਤੇ ਮਿੱਟੀ ਦੀ ਨਮੀ ਦੀ ਜਾਂਚ ਕਰੋ",
+            "ਹਰ ਸੈਸ਼ਨ ਵਿੱਚ 2-3 ਇੰਚ ਪਾਣੀ ਲਗਾਓ",
+            "ਸਿੰਚਾਈ ਤੋਂ ਪਹਿਲਾਂ ਮੌਸਮ ਪੂਰਵਾਨੁਮਾਨ ਦੀ ਨਿਗਰਾਨੀ ਕਰੋ",
+          ],
+        },
+        harvest: {
+          title: "ਕਟਾਈ ਦੀ ਸਿਫਾਰਸ਼",
+          description:
+            "ਪਰਿਪੱਕਤਾ ਸੰਕੇਤਕਾਂ ਦੇ ਆਧਾਰ 'ਤੇ ਤੁਹਾਡੇ ਖੇਤਰ ਵਿੱਚ ਚਾਵਲ ਦੀ ਫਸਲ ਕਟਾਈ ਲਈ ਤਿਆਰ ਹੈ।",
+          actionItems: [
+            "ਅਗਲੇ 5-7 ਦਿਨਾਂ ਵਿੱਚ ਕਟਾਈ ਸ਼ੁਰੂ ਕਰੋ",
+            "ਅਨਾਜ ਦੀ ਨਮੀ ਸਮੱਗਰੀ ਦੀ ਜਾਂਚ ਕਰੋ",
+            "ਭੰਡਾਰਣ ਸਹੂਲਤਾਂ ਤਿਆਰ ਕਰੋ",
+            "ਕਟੀ ਹੋਈ ਫਸਲ ਲਈ ਆਵਾਜਾਈ ਦਾ ਪ੍ਰਬੰਧ ਕਰੋ",
+          ],
+        },
+        fertilizer: {
+          title: "ਖਾਦ ਲਗਾਉਣਾ",
+          description: "ਮੱਕੀ ਦੀ ਫਸਲ ਲਈ ਖਾਦ ਦੀ ਦੂਜੀ ਖੁਰਾਕ ਦਾ ਸਮਾਂ ਹੈ।",
+          actionItems: [
+            "4:2:1 ਅਨੁਪਾਤ ਵਿੱਚ NPK ਖਾਦ ਲਗਾਓ",
+            "ਲਗਾਉਣ ਤੋਂ ਬਾਅਦ ਚੰਗੀ ਤਰ੍ਹਾਂ ਪਾਣੀ ਦਿਓ",
+            "ਦਿਨ ਦੇ ਠੰਡੇ ਹਿੱਸਿਆਂ ਵਿੱਚ ਲਗਾਓ",
+            "7 ਦਿਨ ਬਾਅਦ ਫਸਲ ਪ੍ਰਤੀਕਿਰਿਆ ਦੀ ਨਿਗਰਾਨੀ ਕਰੋ",
+          ],
+        },
+      },
       categories: {
         irrigation: "ਸਿੰਚਾਈ",
         fertilizers: "ਖਾਦ",
         pestControl: "ਕੀਟ ਨਿਯੰਤਰਣ",
         soilHealth: "ਮਿੱਟੀ ਦੀ ਸਿਹਤ",
         cropManagement: "ਫਸਲ ਪ੍ਰਬੰਧਨ",
-        harvesting: "ਵਾਢੀ",
+        harvesting: "ਕਟਾਈ",
       },
       noResults: "ਕੋਈ ਸਲਾਹ ਨਹੀਂ ਮਿਲੀ",
       trySearching: "ਖਾਸ ਵਿਸ਼ਿਆਂ ਦੀ ਖੋਜ ਕਰੋ",
@@ -505,6 +965,124 @@ const translations: Translations = {
       quantity: "ਮਾਤਰਾ",
       inStock: "ਸਟਾਕ ਵਿੱਚ",
       outOfStock: "ਸਟਾਕ ਵਿੱਚ ਨਹੀਂ",
+      all: "ਸਭ",
+      vegetables: "ਸਬਜ਼ੀਆਂ",
+      fruits: "ਫਲ",
+      grains: "ਅਨਾਜ",
+      dairy: "ਡੇਰੀ",
+      organic: "ਜੈਵਿਕ",
+      freshness: "ਤਾਜ਼ਗੀ",
+      harvestedToday: "ਅੱਜ ਵੱਢਿਆ ਗਿਆ",
+      certification: "ਪ੍ਰਮਾਣੀਕਰਣ",
+      farmer: "ਕਿਸਾਨ",
+      location: "ਸਥਾਨ",
+      rating: "ਰੇਟਿੰਗ",
+      description: "ਵੇਰਵਾ",
+      viewDetails: "ਵੇਰਵਾ ਵੇਖੋ",
+      addedToCart: "ਕਾਰਟ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ",
+      viewCart: "ਕਾਰਟ ਵੇਖੋ",
+      checkout: "ਚੈੱਕਆਊਟ",
+      totalItems: "ਕੁੱਲ ਆਈਟਮਾਂ",
+      subtotal: "ਉਪ-ਜੋੜ",
+      ondcBadge: {
+        poweredBy: "ONDC ਦੁਆਰਾ ਸੰਚਾਲਿਤ",
+        directFrom: "ਕਿਸਾਨਾਂ ਤੋਂ ਸਿੱਧੇ ਤੁਹਾਡੇ ਦਰਵਾਜ਼ੇ ਤੱਕ",
+      },
+      farmerCta: {
+        question: "ਕੀ ਤੁਸੀਂ ਕਿਸਾਨ ਹੋ?",
+        description: "ਸਾਡੇ ਬਾਜ਼ਾਰ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ ਅਤੇ ਗਾਹਕਾਂ ਨੂੰ ਸਿੱਧੇ ਵੇਚੋ",
+        joinButton: "ਹੁਣੇ ਸ਼ਾਮਲ ਹੋਵੋ",
+      },
+      alerts: {
+        addedToCart: "ਕਾਰਟ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ",
+        productAdded: "ਉਤਪਾਦ ਸਫਲਤਾਪੂਰਵਕ ਤੁਹਾਡੇ ਕਾਰਟ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ!",
+        ondcOrder: "ONDC ਆਰਡਰ",
+        proceedToBuy: "ਖਰੀਦਣ ਲਈ ਅੱਗੇ ਵਧੋ",
+        from: "ਤੋਂ",
+        price: "ਕੀਮਤ",
+        cancel: "ਰੱਦ ਕਰੋ",
+        proceed: "ਅੱਗੇ ਵਧੋ",
+        orderPlaced: "ਆਰਡਰ ਦਿੱਤਾ ਗਿਆ",
+        orderSuccess:
+          "ਤੁਹਾਡਾ ਆਰਡਰ ONDC ਨੈੱਟਵਰਕ ਰਾਹੀਂ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਤੁਹਾਨੂੰ ਜਲਦੀ ਅਪਡੇਟ ਮਿਲੇਗਾ।",
+        contactFarmer: "ਕਿਸਾਨ ਨਾਲ ਸੰਪਰਕ ਕਰੋ",
+        connectWith: "ਨਾਲ ਜੁੜੋ",
+        call: "ਕਾਲ ਕਰੋ",
+        calling: "ਕਾਲ ਕਰ ਰਹੇ ਹਾਂ",
+        message: "ਸੰਦੇਸ਼",
+        openingChat: "ਨਾਲ ਚੈਟ ਖੋਲ੍ਹ ਰਹੇ ਹਾਂ",
+      },
+      products: {
+        freshTomatoes: {
+          name: "ਤਾਜ਼ੇ ਟਮਾਟਰ",
+          description:
+            "ਅੱਜ ਸਵੇਰੇ ਤੋੜੇ ਗਏ ਤਾਜ਼ੇ, ਜੈਵਿਕ ਰੂਪ ਵਿੱਚ ਉਗਾਏ ਗਏ ਟਮਾਟਰ। ਵਿਟਾਮਿਨਾਂ ਨਾਲ ਭਰਪੂਰ ਅਤੇ ਖਾਣਾ ਪਕਾਉਣ ਲਈ ਬਿਲਕੁਲ ਸਹੀ।",
+        },
+        basmatiRice: {
+          name: "ਬਾਸਮਤੀ ਚਾਵਲ",
+          description:
+            "ਪ੍ਰਮਾਣਿਕ ਸੁਗੰਧ ਅਤੇ ਲੰਬੇ ਦਾਣਿਆਂ ਵਾਲਾ ਪ੍ਰੀਮੀਅਮ ਗੁਣਵੱਤਾ ਦਾ ਬਾਸਮਤੀ ਚਾਵਲ। ਪਰੰਪਰਾਗਤ ਤਰੀਕਿਆਂ ਨਾਲ ਉਗਾਇਆ ਗਿਆ।",
+        },
+        freshMangoes: {
+          name: "ਤਾਜ਼ੇ ਅੰਬ",
+          description:
+            "ਮਿੱਠੇ ਅਤੇ ਰਸੀਲੇ ਅਲਫਾਂਸੋ ਅੰਬ, ਫਲਾਂ ਦੇ ਰਾਜਾ। ਪੂਰੀ ਤਰ੍ਹਾਂ ਪੱਕੇ ਹੋਏ ਅਤੇ ਖਾਣ ਲਈ ਤਿਆਰ।",
+        },
+        farmFreshMilk: {
+          name: "ਫਾਰਮ ਫਰੈਸ਼ ਦੁੱਧ",
+          description:
+            "ਘਾਹ ਖਾਣ ਵਾਲੀਆਂ ਗਾਵਾਂ ਦਾ ਸ਼ੁੱਧ ਦੁੱਧ। ਪੋਸ਼ਕ ਤੱਤਾਂ ਨਾਲ ਭਰਪੂਰ ਅਤੇ ਰੋਜ਼ਾਨਾ ਤਾਜ਼ਾ ਪਹੁੰਚਾਇਆ ਜਾਂਦਾ ਹੈ।",
+        },
+        organicSpinach: {
+          name: "ਜੈਵਿਕ ਪਾਲਕ",
+          description:
+            "ਤਾਜ਼ੇ ਜੈਵਿਕ ਪਾਲਕ ਦੇ ਪੱਤੇ, ਕੀਟਨਾਸ਼ਕ ਰਹਿਤ ਅਤੇ ਆਇਰਨ ਨਾਲ ਭਰਪੂਰ। ਸਿਹਤਮੰਦ ਭੋਜਨ ਲਈ ਬਿਲਕੁਲ ਸਹੀ।",
+        },
+        wheatFlour: {
+          name: "ਕਣਕ ਦਾ ਆਟਾ",
+          description:
+            "ਜੈਵਿਕ ਰੂਪ ਵਿੱਚ ਉਗਾਈ ਗਈ ਕਣਕ ਤੋਂ ਪੱਥਰ ਉੱਤੇ ਪਿਸਿਆ ਸਾਬਤ ਕਣਕ ਦਾ ਆਟਾ। ਕੋਈ ਸੰਰਕਸ਼ਕ ਨਹੀਂ ਮਿਲਾਇਆ ਗਿਆ।",
+        },
+      },
+      farmers: {
+        rajeshKumar: "ਰਾਜੇਸ਼ ਕੁਮਾਰ",
+        priyaSingh: "ਪ੍ਰਿਯਾ ਸਿੰਘ",
+        sureshPatel: "ਸੁਰੇਸ਼ ਪਟੇਲ",
+        mohitSharma: "ਮੋਹਿਤ ਸ਼ਰਮਾ",
+        anitaDevi: "ਅਨੀਤਾ ਦੇਵੀ",
+        vikramSingh: "ਵਿਕਰਮ ਸਿੰਘ",
+      },
+      locations: {
+        haryana: "ਹਰਿਆਣਾ, ਭਾਰਤ",
+        punjab: "ਪੰਜਾਬ, ਭਾਰਤ",
+        gujarat: "ਗੁਜਰਾਤ, ਭਾਰਤ",
+        rajasthan: "ਰਾਜਸਥਾਨ, ਭਾਰਤ",
+        uttarPradesh: "ਉੱਤਰ ਪ੍ਰਦੇਸ਼, ਭਾਰਤ",
+        madhyaPradesh: "ਮੱਧ ਪ੍ਰਦੇਸ਼, ਭਾਰਤ",
+      },
+      certifications: {
+        organic: "ਜੈਵਿਕ",
+        fssai: "FSSAI",
+        premiumGrade: "ਪ੍ਰੀਮੀਅਮ ਗ੍ਰੇਡ",
+        exportQuality: "ਨਿਰਯਾਤ ਗੁਣਵੱਤਾ",
+        premium: "ਪ੍ਰੀਮੀਅਮ",
+        pasteurized: "ਪਾਸਚਰਾਈਜ਼ਡ",
+        pesticideFree: "ਕੀਟਨਾਸ਼ਕ ਮੁਕਤ",
+        stoneGround: "ਪੱਥਰ ਉੱਤੇ ਪਿਸਿਆ",
+      },
+      freshnessTypes: {
+        harvestedToday: "ਅੱਜ ਵੱਢਿਆ ਗਿਆ",
+        freshStock: "ਤਾਜ਼ਾ ਸਟਾਕ",
+        treeFresh: "ਰੁੱਖ ਤੋਂ ਤਾਜ਼ਾ",
+        dailyFresh: "ਰੋਜ਼ਾਨਾ ਤਾਜ਼ਾ",
+        morningFresh: "ਸਵੇਰ ਦਾ ਤਾਜ਼ਾ",
+        freshGround: "ਤਾਜ਼ਾ ਪਿਸਿਆ ਹੋਇਆ",
+      },
+      units: {
+        kg: "ਕਿਲੋ",
+        liter: "ਲੀਟਰ",
+        bunch: "ਗੁੱਛਾ",
+      },
     },
     settings: {
       title: "ਸੈਟਿੰਗਜ਼",
@@ -514,6 +1092,12 @@ const translations: Translations = {
       privacy: "ਗੁਪਤਤਾ",
       about: "ਬਾਰੇ",
       logout: "ਲਾਗ ਆਊਟ",
+      accessibility: "ਪਹੁੰਚਯੋਗਤਾ",
+      voiceSupport: "ਆਵਾਜ਼ ਸਹਾਇਤਾ",
+      feedback: "ਪ੍ਰਤੀਕਿਰਿਆ",
+      reportIssue: "ਸਮੱਸਿਆ ਦੀ ਰਿਪੋਰਟ ਕਰੋ",
+      provideFeedback: "ਪ੍ਰਤੀਕਿਰਿਆ ਪ੍ਰਦਾਨ ਕਰੋ",
+      currentLocation: "ਮੌਜੂਦਾ ਸਥਾਨ: ਫਾਰਮਵਿਲ",
       languageSelection: {
         title: "ਭਾਸ਼ਾ ਚੁਣੋ",
         subtitle: "ਆਪਣੀ ਪਸੰਦੀਦਾ ਭਾਸ਼ਾ ਚੁਣੋ",
@@ -532,6 +1116,9 @@ const translations: Translations = {
       temperature: "ਤਾਪਮਾਨ",
       humidity: "ਨਮੀ",
       windSpeed: "ਹਵਾ ਦੀ ਗਤੀ",
+      wind: "ਹਵਾ",
+      visibility: "ਦਿੱਖ",
+      pressure: "ਦਬਾਅ",
       precipitation: "ਬਰਸਾਤ",
       uvIndex: "UV ਸੂਚਕਾਂਕ",
       sunrise: "ਸੂਰਜ ਚੜ੍ਹਨਾ",
@@ -539,6 +1126,15 @@ const translations: Translations = {
       today: "ਅੱਜ",
       tomorrow: "ਕੱਲ੍ਹ",
       weekly: "ਹਫਤਾਵਾਰੀ ਪੂਰਵ ਅਨੁਮਾਨ",
+      feelsLike: "ਮਹਿਸੂਸ ਹੋ ਰਿਹਾ ਹੈ",
+      weatherAlert: "ਮੌਸਮ ਚੇਤਾਵਨੀ",
+      weatherAlertText: "ਕੱਲ੍ਹ ਭਾਰੀ ਬਰਸਾਤ ਦੀ ਉਮੀਦ ਹੈ। ਜਲ ਜਮਾਅ ਲਈ ਤਿਆਰ ਰਹੋ।",
+      sevenDayForecast: "7-ਦਿਨ ਦਾ ਪੂਰਵ ਅਨੁਮਾਨ",
+      partlyCloudy: "ਅੰਸ਼ਿਕ ਬੱਦਲ",
+      heavyRain: "ਭਾਰੀ ਬਰਸਾਤ",
+      cloudy: "ਬੱਦਲ",
+      sunny: "ਧੁੱਪ",
+      lightRain: "ਹਲਕੀ ਬਰਸਾਤ",
     },
     soilHealth: {
       title: "ਮਿੱਟੀ ਸਿਹਤ ਵਿਸ਼ਲੇਸ਼ਣ",

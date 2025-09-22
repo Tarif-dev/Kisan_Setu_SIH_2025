@@ -162,7 +162,7 @@ const Home = () => {
                 {weather ? weather.description : "Partly Cloudy"}
               </Text>
               <Text className="text-gray-500 text-sm mt-1">
-                Feels like{" "}
+                {t("weather.feelsLike")}{" "}
                 {weather
                   ? Math.round(weather.feelsLike || weather.temperature)
                   : 30}
@@ -176,28 +176,36 @@ const Home = () => {
           <View className="flex-row justify-between">
             <View className="items-center flex-1">
               <Ionicons name="water" size={20} color="#60A5FA" />
-              <Text className="text-gray-400 text-xs mt-1">Humidity</Text>
+              <Text className="text-gray-400 text-xs mt-1">
+                {t("weather.humidity")}
+              </Text>
               <Text className="text-white font-semibold">
                 {weather ? weather.humidity : 65}%
               </Text>
             </View>
             <View className="items-center flex-1">
               <Ionicons name="eye" size={20} color="#34D399" />
-              <Text className="text-gray-400 text-xs mt-1">Visibility</Text>
+              <Text className="text-gray-400 text-xs mt-1">
+                {t("weather.visibility")}
+              </Text>
               <Text className="text-white font-semibold">
                 {weather ? weather.visibility : 10} km
               </Text>
             </View>
             <View className="items-center flex-1">
               <Ionicons name="speedometer" size={20} color="#A78BFA" />
-              <Text className="text-gray-400 text-xs mt-1">Wind</Text>
+              <Text className="text-gray-400 text-xs mt-1">
+                {t("weather.wind")}
+              </Text>
               <Text className="text-white font-semibold">
                 {weather ? weather.windSpeed : 8} km/h
               </Text>
             </View>
             <View className="items-center flex-1">
               <Ionicons name="thermometer" size={20} color="#F87171" />
-              <Text className="text-gray-400 text-xs mt-1">Pressure</Text>
+              <Text className="text-gray-400 text-xs mt-1">
+                {t("weather.pressure")}
+              </Text>
               <Text className="text-white font-semibold">
                 {weather ? Math.round(weather.pressure || 1013) : 1013} mb
               </Text>
@@ -210,9 +218,11 @@ const Home = () => {
           <View className="flex-row items-center">
             <Ionicons name="water" size={20} color="#60A5FA" />
             <View className="ml-3 flex-1">
-              <Text className="text-blue-400 font-medium">Weather Alert</Text>
+              <Text className="text-blue-400 font-medium">
+                {t("weather.weatherAlert")}
+              </Text>
               <Text className="text-gray-300 text-sm mt-1">
-                Heavy rainfall expected tomorrow. Prepare for waterlogging.
+                {t("weather.weatherAlertText")}
               </Text>
             </View>
           </View>
@@ -220,31 +230,53 @@ const Home = () => {
 
         {/* 7-Day Forecast */}
         <View className="bg-gray-800 rounded-2xl p-4 border border-gray-700">
-          <Text className="text-white font-semibold mb-4">7-Day Forecast</Text>
+          <Text className="text-white font-semibold mb-4">
+            {t("weather.sevenDayForecast")}
+          </Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {[
               {
-                day: "Today",
+                day: t("weather.today"),
                 temp: "28°",
                 icon: "partly-sunny",
-                desc: "Partly Cloudy",
+                desc: t("weather.partlyCloudy"),
               },
               {
-                day: "Tomorrow",
+                day: t("weather.tomorrow"),
                 temp: "26°",
                 icon: "rainy",
-                desc: "Heavy Rain",
+                desc: t("weather.heavyRain"),
               },
-              { day: "Wed", temp: "24°", icon: "cloudy", desc: "Cloudy" },
-              { day: "Thu", temp: "27°", icon: "sunny", desc: "Sunny" },
+              {
+                day: "Wed",
+                temp: "24°",
+                icon: "cloudy",
+                desc: t("weather.cloudy"),
+              },
+              {
+                day: "Thu",
+                temp: "27°",
+                icon: "sunny",
+                desc: t("weather.sunny"),
+              },
               {
                 day: "Fri",
                 temp: "29°",
                 icon: "partly-sunny",
-                desc: "Partly Cloudy",
+                desc: t("weather.partlyCloudy"),
               },
-              { day: "Sat", temp: "25°", icon: "rainy", desc: "Light Rain" },
-              { day: "Sun", temp: "28°", icon: "sunny", desc: "Sunny" },
+              {
+                day: "Sat",
+                temp: "25°",
+                icon: "rainy",
+                desc: t("weather.lightRain"),
+              },
+              {
+                day: "Sun",
+                temp: "28°",
+                icon: "sunny",
+                desc: t("weather.sunny"),
+              },
             ].map((forecast, index) => (
               <View
                 key={index}

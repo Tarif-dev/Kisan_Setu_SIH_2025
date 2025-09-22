@@ -117,7 +117,7 @@ const Settings = () => {
                 {t("onboarding.location")}
               </Text>
               <Text className="text-gray-400 text-sm">
-                Current location: Farmville
+                {t("settings.currentLocation")}
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
@@ -166,7 +166,9 @@ const Settings = () => {
 
       {/* Accessibility Section */}
       <View className="mx-4 mb-6">
-        <Text className="text-xl font-bold text-white mb-4">Accessibility</Text>
+        <Text className="text-xl font-bold text-white mb-4">
+          {t("settings.accessibility")}
+        </Text>
 
         <View className="bg-gray-800 rounded-2xl p-4 border border-gray-700">
           <View className="flex-row items-center justify-between">
@@ -175,7 +177,7 @@ const Settings = () => {
                 <Ionicons name="mic" size={20} color="#22C55E" />
               </View>
               <Text className="text-white font-medium text-base">
-                Voice Support
+                {t("settings.voiceSupport")}
               </Text>
             </View>
             <Switch
@@ -190,19 +192,23 @@ const Settings = () => {
 
       {/* Feedback Section */}
       <View className="mx-4 mb-8">
-        <Text className="text-xl font-bold text-white mb-4">Feedback</Text>
+        <Text className="text-xl font-bold text-white mb-4">
+          {t("settings.feedback")}
+        </Text>
 
         <View className="bg-gray-800 rounded-2xl overflow-hidden border border-gray-700">
           <TouchableOpacity
             className="flex-row items-center p-4 border-b border-gray-700"
-            onPress={() => Alert.alert("Report Issue", "Contact support")}
+            onPress={() =>
+              Alert.alert(t("settings.reportIssue"), "Contact support")
+            }
           >
             <View className="w-10 h-10 bg-green-500/20 rounded-full items-center justify-center mr-4">
               <Ionicons name="bug" size={20} color="#22C55E" />
             </View>
             <View className="flex-1">
               <Text className="text-white font-medium text-base">
-                Report an Issue
+                {t("settings.reportIssue")}
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
@@ -210,14 +216,16 @@ const Settings = () => {
 
           <TouchableOpacity
             className="flex-row items-center p-4"
-            onPress={() => Alert.alert("Feedback", "Send us your feedback")}
+            onPress={() =>
+              Alert.alert(t("settings.feedback"), "Send us your feedback")
+            }
           >
             <View className="w-10 h-10 bg-green-500/20 rounded-full items-center justify-center mr-4">
               <Ionicons name="chatbubble" size={20} color="#22C55E" />
             </View>
             <View className="flex-1">
               <Text className="text-white font-medium text-base">
-                Provide Feedback
+                {t("settings.provideFeedback")}
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
